@@ -32,7 +32,9 @@ public class Segment {
 
     // Add a shared place from another segment
     public void addSharedPlace(Place place) {
-        sharedPlaces.add(place);
+        if (places.contains(place)) {
+            places.add(place);
+        }
     }
 
     // Create and add a transition to this segment
@@ -60,7 +62,4 @@ public class Segment {
         return transitions;
     }
 
-    public Set<Place> getSharedPlaces() {
-        return sharedPlaces;
-    }
 }
