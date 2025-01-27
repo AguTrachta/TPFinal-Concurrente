@@ -1,49 +1,72 @@
+
 package petrinet;
 
 import java.util.List;
 
 public class Transition {
-    private final String name;
-    private final List<Place> inputPlaces;
-    private final List<Place> outputPlaces;
+    private String id;
+    private List<Place> inputPlaces;
+    private List<Place> outputPlaces;
+    private boolean isTimed;
+    private long delay; // Delay in milliseconds (for timed transitions)
 
-    // Constructor
-    public Transition(String name, List<Place> inputPlaces, List<Place> outputPlaces) {
-        this.name = name;
+    public Transition(String id, List<Place> inputPlaces, List<Place> outputPlaces, boolean isTimed, long delay) {
+        this.id = id;
         this.inputPlaces = inputPlaces;
         this.outputPlaces = outputPlaces;
+        this.isTimed = isTimed;
+        this.delay = delay;
     }
 
-    // Get the name of the transition
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    // Check if the transition is enabled
     public boolean isEnabled() {
-        return inputPlaces.stream().allMatch(place -> place.hasTokens(1));
+        // Check if all input places have enough tokens
+        for (Place place : inputPlaces) {
+            if (place.getTokens() <= 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    // Fire the transition
-    public void fire() {
+    public void fire() throws InterruptedException {
         if (!isEnabled()) {
-            throw new IllegalStateException("Transition is not enabled.");
+            throw new IllegalStateException("Transition " + id + " is not enabled!");
         }
 
-        // Remove tokens from input places
-        inputPlaces.forEach(place -> place.removeTokens(1));
+        if (isTimed) {
+            // Wait for the specified delay
+            System.out.println("Transition " + id + " is waiting for " + delay + "ms");
+            Thread.sleep(delay);
+        }
 
-        // Add tokens to output places
-        outputPlaces.forEach(place -> place.addTokens(1));
+        // Move tokens from input places to output places
+        for (Place place : inputPlaces) {
+            place.removeTokens(1); // Remove 1 token from each input place
+        }
+        for (Place place : outputPlaces) {
+            place.addTokens(1); // Add 1 token to each output place
+        }
+
+        System.out.println("Transition " + id + " fired!");
     }
 
-    // Get the input places
-    public List<Place> getInputPlaces() {
-        return inputPlaces;
+    public void setDelay(long delay) {
+        this.delay = delay;
     }
 
-    // Get the output places
-    public List<Place> getOutputPlaces() {
-        return outputPlaces;
+    public long getDelay() {
+        return delay;
+    }
+
+    public boolean isTimed() {
+        return isTimed;
+    }
+
+    public void setTimed(boolean isTimed) {
+        this.isTimed = isTimed;
     }
 }
