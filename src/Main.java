@@ -1,64 +1,90 @@
-import petrinet.*;
 
-import java.util.Arrays;
+import java.util.*;
+import pool.PoolManager;
+import pool.MyThreadFactory;
+import monitor.Monitor;
+import monitor.MonitorInterface;
+import petrinet.Places;
+import petrinet.Segment;
+import petrinet.Transition;
 
+/**
+ * Main class to test a more complex Petri net.
+ */
 public class Main {
   public static void main(String[] args) {
+    // 1. Create a shared Places object and initialize places.
+    Places places = new Places();
+    places.addPlace(1, 1); // Place 1 starts with 1 token.
+    places.addPlace(2, 1); // Place 2 starts with 1 token.
+    places.addPlace(3, 0); // Place 3 starts with 0 tokens.
+    places.addPlace(4, 0); // Place 4 starts with 0 tokens.
+
+    // 2. Create transitions.
+
+    // Transition 1: Consumes 1 token from Place 1 and 1 token from Place 2, then
+    // produces 1 token in Place 3.
+    Map<Integer, Integer> pre1 = new HashMap<>();
+    pre1.put(1, 1);
+    pre1.put(2, 1);
+    Map<Integer, Integer> post1 = new HashMap<>();
+    post1.put(3, 1);
+    Transition t1 = new Transition(1, pre1, post1);
+
+    // Transition 2: Temporal transition; consumes 1 token from Place 3 and produces
+    // 1 token in Place 4,
+    // with a delay of 500ms.
+    Map<Integer, Integer> pre2 = new HashMap<>();
+    pre2.put(3, 1);
+    Map<Integer, Integer> post2 = new HashMap<>();
+    post2.put(4, 1);
+    Transition t2 = new Transition(2, pre2, post2, true, 500);
+
+    // 3. Build a mapping of transitions (transition id -> Transition).
+    Map<Integer, Transition> transitions = new HashMap<>();
+    transitions.put(t1.getId(), t1);
+    transitions.put(t2.getId(), t2);
+
+    // 4. Create a Monitor with the shared Places and transitions map.
+    MonitorInterface monitor = new Monitor(places, transitions);
+
+    // 5. Create segments.
+    // Segment A will handle Transition 1.
+    List<Transition> segATransitions = new ArrayList<>();
+    segATransitions.add(t1);
+    Segment segmentA = new Segment("Segment A", segATransitions, monitor, places);
+
+    // Segment B will handle Transition 2.
+    List<Transition> segBTransitions = new ArrayList<>();
+    segBTransitions.add(t2);
+    Segment segmentB = new Segment("Segment B", segBTransitions, monitor, places);
+
+    // 6. Set up the thread pool using the custom ThreadFactory and PoolManager.
+    MyThreadFactory threadFactory = new MyThreadFactory("PoolThread");
+    PoolManager poolManager = new PoolManager(4, threadFactory);
+
+    // Submit the segments to the thread pool.
+    poolManager.submitTask(segmentA);
+    poolManager.submitTask(segmentB);
+
+    // 7. Let the simulation run for a while (e.g., 3 seconds).
     try {
-      // Create Segment A
-      Segment segmentA = new Segment("Segment A");
-
-      // Define Places in Segment A
-      Place P0 = segmentA.createPlace("P0", 5); // Max tokens: 5
-      Place P1 = segmentA.createPlace("P1", 1); // Max tokens: 1
-      Place P2 = segmentA.createPlace("P2", 1); // Max tokens: 1
-      Place P3 = segmentA.createPlace("P3", 1); // Max tokens: 1
-      Place P4 = segmentA.createPlace("P4", 5); // Max tokens: 1
-
-      // Add initial tokens
-      P0.addTokens(5); // Start with 5 tokens in P0
-      P1.addTokens(1); // Start with 1 token in P1
-      P4.addTokens(5);
-
-      // Define Transitions in Segment A
-      Transition T0 = segmentA.createTransition(
-          "T0", // Transition ID
-          Arrays.asList(P0, P1, P4), // Input places
-          Arrays.asList(P2), // Output places
-          false, // Not timed
-          0 // No delay
-      );
-
-      Transition T1 = segmentA.createTransition(
-          "T1", // Transition ID
-          Arrays.asList(P2), // Input places
-          Arrays.asList(P3, P1), // Output places
-          false, // Not timed
-          0 // No delay
-      );
-
-      // Display initial state
-      System.out.println("Initial state:");
-      System.out.println("P0 tokens: " + P0.getTokens());
-      System.out.println("P1 tokens: " + P1.getTokens());
-      System.out.println("P2 tokens: " + P2.getTokens());
-      System.out.println("P3 tokens: " + P3.getTokens());
-      System.out.println("P4 tokens: " + P4.getTokens());
-
-      // Execute Segment A
-      System.out.println("\nExecuting Segment A...");
-      segmentA.execute();
-
-      // Display state after execution
-      System.out.println("\nState after executing Segment A:");
-      System.out.println("P0 tokens: " + P0.getTokens());
-      System.out.println("P1 tokens: " + P1.getTokens());
-      System.out.println("P2 tokens: " + P2.getTokens());
-      System.out.println("P3 tokens: " + P3.getTokens());
-      System.out.println("P4 tokens: " + P4.getTokens());
-
-    } catch (Exception e) {
+      Thread.sleep(3000);
+    } catch (InterruptedException e) {
       e.printStackTrace();
     }
+
+    // 8. Signal the segments to stop.
+    segmentA.stop();
+    segmentB.stop();
+
+    // 9. Shutdown the thread pool gracefully.
+    poolManager.shutdown();
+
+    // 10. Print the final token counts for each place.
+    System.out.println("Final tokens in Place 1: " + places.getTokenCount(1));
+    System.out.println("Final tokens in Place 2: " + places.getTokenCount(2));
+    System.out.println("Final tokens in Place 3: " + places.getTokenCount(3));
+    System.out.println("Final tokens in Place 4: " + places.getTokenCount(4));
   }
 }
