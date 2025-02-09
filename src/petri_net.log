@@ -1,28 +1,171 @@
-[2025-02-06 19:12:18] [main] [INFO] Places object created.
-[2025-02-06 19:12:18] [main] [INFO] Added place 1 with initial tokens: 1
-[2025-02-06 19:12:18] [main] [INFO] Added place 2 with initial tokens: 1
-[2025-02-06 19:12:18] [main] [INFO] Added place 3 with initial tokens: 0
-[2025-02-06 19:12:18] [main] [INFO] Added place 4 with initial tokens: 0
-[2025-02-06 19:12:18] [main] [INFO] Transition 1 created (non-temporal).
-[2025-02-06 19:12:18] [main] [INFO] Transition 1 created (non-temporal).
-[2025-02-06 19:12:18] [main] [INFO] Transition 2 created (temporal) with delay 500 ms.
-[2025-02-06 19:12:18] [main] [INFO] Segment A initialized with 1 transitions.
-[2025-02-06 19:12:18] [main] [INFO] Segment B initialized with 1 transitions.
-[2025-02-06 19:12:18] [PoolThread-2] [INFO] Segment B started running.
-[2025-02-06 19:12:18] [PoolThread-1] [INFO] Segment A started running.
-[2025-02-06 19:12:18] [PoolThread-1] [INFO] Attempting to fire Transition 1
-[2025-02-06 19:12:18] [PoolThread-1] [INFO] Removed 1 tokens from place 1. New count: 0
-[2025-02-06 19:12:18] [PoolThread-1] [INFO] Removed 1 tokens from place 2. New count: 0
-[2025-02-06 19:12:18] [PoolThread-1] [INFO] Added 1 tokens to place 3. New count: 1
-[2025-02-06 19:12:18] [PoolThread-1] [INFO] Transition 1 fired successfully.
-[2025-02-06 19:12:18] [PoolThread-1] [INFO] Segment A fired transition: 1
-[2025-02-06 19:12:18] [PoolThread-2] [INFO] Attempting to fire Transition 2
-[2025-02-06 19:12:18] [PoolThread-2] [INFO] Transition 2 is temporal. Sleeping for 500 ms.
-[2025-02-06 19:12:18] [PoolThread-2] [INFO] Removed 1 tokens from place 3. New count: 0
-[2025-02-06 19:12:18] [PoolThread-2] [INFO] Added 1 tokens to place 4. New count: 1
-[2025-02-06 19:12:18] [PoolThread-2] [INFO] Transition 2 fired successfully.
-[2025-02-06 19:12:18] [PoolThread-2] [INFO] Segment B fired transition: 2
-[2025-02-06 19:12:21] [main] [INFO] Segment A stop signal received.
-[2025-02-06 19:12:21] [main] [INFO] Segment B stop signal received.
-[2025-02-06 19:12:21] [PoolThread-2] [INFO] Segment B stopped running.
-[2025-02-06 19:12:21] [PoolThread-1] [INFO] Segment A stopped running.
+[2025-02-09 10:14:54] [main] [INFO] Starting Petri net simulation with BalancedPolicy.
+[2025-02-09 10:14:54] [main] [INFO] Places object created.
+[2025-02-09 10:14:54] [main] [INFO] Added place 3 with initial tokens: 10
+[2025-02-09 10:14:54] [main] [INFO] Added place 6 with initial tokens: 10
+[2025-02-09 10:14:54] [main] [INFO] Added place 7 with initial tokens: 10
+[2025-02-09 10:14:54] [main] [INFO] Added place 9 with initial tokens: 0
+[2025-02-09 10:14:54] [main] [INFO] Added place 100 with initial tokens: 0
+[2025-02-09 10:14:54] [main] [INFO] Added place 101 with initial tokens: 0
+[2025-02-09 10:14:54] [main] [INFO] Initialized Places: p3=10, p6=1, p7=1, p9=0, p_confirm=0, p_cancel=0.
+[2025-02-09 10:14:54] [main] [INFO] Transition 2 created (non-temporal).
+[2025-02-09 10:14:54] [main] [INFO] Transition 2 created (non-temporal).
+[2025-02-09 10:14:54] [main] [INFO] Transition 3 created (non-temporal).
+[2025-02-09 10:14:54] [main] [INFO] Transition 3 created (non-temporal).
+[2025-02-09 10:14:54] [main] [INFO] Transition 6 created (non-temporal).
+[2025-02-09 10:14:54] [main] [INFO] Transition 6 created (non-temporal).
+[2025-02-09 10:14:54] [main] [INFO] Transition 7 created (non-temporal).
+[2025-02-09 10:14:54] [main] [INFO] Transition 7 created (non-temporal).
+[2025-02-09 10:14:54] [main] [INFO] Monitor created with policy: PriorityPolicy
+[2025-02-09 10:14:54] [main] [INFO] Monitor created with BalancedPolicy.
+[2025-02-09 10:14:54] [main] [INFO] Segment Reservation initialized with 2 transitions.
+[2025-02-09 10:14:54] [main] [INFO] Segment Outcome initialized with 2 transitions.
+[2025-02-09 10:14:54] [main] [INFO] Segments created for Reservation (t2,t3) and Outcome (t6,t7).
+[2025-02-09 10:14:54] [main] [INFO] Thread pool set up with maximum 4 concurrent threads.
+[2025-02-09 10:14:54] [main] [INFO] Submitted Reservation and Outcome segments to thread pool.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Segment Outcome started running.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Segment Reservation started running.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Attempting to fire Transition 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 3. New count: 9
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 6. New count: 9
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Added 1 tokens to place 9. New count: 1
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Segment Reservation fired transition: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Attempting to fire Transition 3
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 3. New count: 8
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 7. New count: 9
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Added 1 tokens to place 9. New count: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 3 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 3 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Segment Reservation fired transition: 3
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Attempting to fire Transition 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Removed 1 tokens from place 9. New count: 1
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Added 1 tokens to place 100. New count: 1
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Segment Outcome fired transition: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Attempting to fire Transition 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 3. New count: 7
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 6. New count: 8
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Added 1 tokens to place 9. New count: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Segment Reservation fired transition: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Attempting to fire Transition 7
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Removed 1 tokens from place 9. New count: 1
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Added 1 tokens to place 101. New count: 1
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 7 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 7 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Segment Outcome fired transition: 7
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [DEBUG] Policy did not allow transition 3 to fire.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Attempting to fire Transition 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Removed 1 tokens from place 9. New count: 0
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Added 1 tokens to place 100. New count: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Segment Outcome fired transition: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Attempting to fire Transition 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 3. New count: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 6. New count: 7
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Added 1 tokens to place 9. New count: 1
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Segment Reservation fired transition: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Attempting to fire Transition 3
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 3. New count: 5
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 7. New count: 8
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Added 1 tokens to place 9. New count: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 3 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 3 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Segment Reservation fired transition: 3
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Attempting to fire Transition 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 3. New count: 4
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 6. New count: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Added 1 tokens to place 9. New count: 3
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Segment Reservation fired transition: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [DEBUG] Policy did not allow transition 3 to fire.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Attempting to fire Transition 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 3. New count: 3
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 6. New count: 5
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Added 1 tokens to place 9. New count: 4
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Segment Reservation fired transition: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [DEBUG] Policy did not allow transition 3 to fire.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Attempting to fire Transition 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 3. New count: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 6. New count: 4
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Added 1 tokens to place 9. New count: 5
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Segment Reservation fired transition: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Attempting to fire Transition 3
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 3. New count: 1
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 7. New count: 7
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Added 1 tokens to place 9. New count: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 3 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 3 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Segment Reservation fired transition: 3
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Attempting to fire Transition 2
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 3. New count: 0
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Removed 1 tokens from place 6. New count: 3
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Added 1 tokens to place 9. New count: 7
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Transition 2 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-1] [INFO] Segment Reservation fired transition: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Attempting to fire Transition 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Removed 1 tokens from place 9. New count: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Added 1 tokens to place 100. New count: 3
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Segment Outcome fired transition: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [DEBUG] Policy did not allow transition 7 to fire.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Attempting to fire Transition 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Removed 1 tokens from place 9. New count: 5
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Added 1 tokens to place 100. New count: 4
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Segment Outcome fired transition: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Attempting to fire Transition 7
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Removed 1 tokens from place 9. New count: 4
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Added 1 tokens to place 101. New count: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 7 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 7 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Segment Outcome fired transition: 7
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Attempting to fire Transition 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Removed 1 tokens from place 9. New count: 3
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Added 1 tokens to place 100. New count: 5
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Segment Outcome fired transition: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [DEBUG] Policy did not allow transition 7 to fire.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Attempting to fire Transition 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Removed 1 tokens from place 9. New count: 2
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Added 1 tokens to place 100. New count: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Segment Outcome fired transition: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [DEBUG] Policy did not allow transition 7 to fire.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Attempting to fire Transition 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Removed 1 tokens from place 9. New count: 1
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Added 1 tokens to place 100. New count: 7
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Segment Outcome fired transition: 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [DEBUG] Policy did not allow transition 7 to fire.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Attempting to fire Transition 6
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Removed 1 tokens from place 9. New count: 0
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Added 1 tokens to place 100. New count: 8
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Transition 6 fired successfully.
+[2025-02-09 10:14:54] [PolicyPoolThread-2] [INFO] Segment Outcome fired transition: 6
+[2025-02-09 10:14:59] [main] [INFO] Segment Reservation stop signal received.
+[2025-02-09 10:14:59] [main] [INFO] Segment Outcome stop signal received.
+[2025-02-09 10:14:59] [main] [INFO] Stop signals sent to segments.
+[2025-02-09 10:14:59] [PolicyPoolThread-1] [INFO] Segment Reservation stopped running.
+[2025-02-09 10:14:59] [PolicyPoolThread-2] [INFO] Segment Outcome stopped running.
+[2025-02-09 10:14:59] [main] [INFO] Thread pool shutdown gracefully.
+[2025-02-09 10:14:59] [main] [INFO] Final Outcome: p_confirm = 8, p_cancel = 2
+[2025-02-09 10:14:59] [main] [INFO] Petri net simulation with BalancedPolicy ended.
