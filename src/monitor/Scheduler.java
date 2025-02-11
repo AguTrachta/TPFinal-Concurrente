@@ -56,7 +56,7 @@ public class Scheduler implements Runnable {
                     // Double-check the condition once the lock is acquired.
                     if (!anySegmentIsReady()) {
                         try {
-                            logger.debug("Scheduler awaiting signal on transitionsEnabled condition.");
+                            // logger.debug("Scheduler awaiting signal on transitionsEnabled condition.");
                             TransitionNotifier.transitionsEnabled.await();
                         } catch (InterruptedException e) {
                             logger.warn("Scheduler interrupted during await.");

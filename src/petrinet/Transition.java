@@ -99,13 +99,14 @@ public class Transition {
      *                              delay.
      */
     public void fire(Places places) throws InterruptedException {
-        logger.info("Attempting to fire Transition " + id);
+        // logger.info("Attempting to fire Transition " + id);
         if (!isEnabled(places)) {
-            logger.error("Transition " + id + " is not enabled and cannot be fired.");
+            // logger.error("Transition " + id + " is not enabled and cannot be fired.");
             throw new IllegalStateException("Transition " + id + " is not enabled.");
         }
         if (isTemporal) {
-            logger.info("Transition " + id + " is temporal. Sleeping for " + delay + " ms.");
+            // logger.info("Transition " + id + " is temporal. Sleeping for " + delay + "
+            // ms.");
             Thread.sleep(delay);
         }
         // Remove tokens from input places (preconditions)
@@ -126,7 +127,6 @@ public class Transition {
             // place " + placeId);
             places.addTokens(placeId, tokensToAdd);
         }
-        logger.info("Transition " + id + " fired successfully.");
+        // logger.info("Transition " + id + " fired successfully.");
     }
 }
-

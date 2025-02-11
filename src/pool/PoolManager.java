@@ -1,4 +1,3 @@
-
 package pool;
 
 import java.util.concurrent.ExecutorService;
@@ -33,18 +32,25 @@ public class PoolManager {
   }
 
   /**
-   * Shuts down the thread pool gracefully, waiting for tasks to complete.
+   * Gracefully shuts down the thread pool, waiting for tasks to complete.
    */
   public void shutdown() {
     executorService.shutdown();
     try {
-      // Wait up to 60 seconds for existing tasks to terminate.
       if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-        executorService.shutdownNow(); // Force shutdown if tasks have not finished.
+        executorService.shutdownNow();
       }
     } catch (InterruptedException e) {
       executorService.shutdownNow();
-      Thread.currentThread().interrupt(); // Restore the interrupted status.
+      Thread.currentThread().interrupt();
     }
   }
+
+  /**
+   * Immediately shuts down the thread pool by cancelling running tasks.
+   */
+  public void shutdownNow() {
+    executorService.shutdownNow();
+  }
 }
+

@@ -79,7 +79,7 @@ public class Segment implements Runnable {
                 boolean fired = monitor.fireTransition(transition.getId());
                 if (fired) {
                     firedAnyTransition = true;
-                    logger.info(segmentName + " fired transition: " + transition.getId());
+                    // logger.info(segmentName + " fired transition: " + transition.getId());
                 }
             }
         }

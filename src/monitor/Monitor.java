@@ -9,6 +9,11 @@ import java.util.Map;
  * The Monitor coordinates the firing of transitions.
  * It checks that transitions are enabled, consults the active Policy,
  * fires the transition, and updates counters.
+ *
+ * This version also maintains a counter for T11 (the designated closing
+ * transition)
+ * and uses an extra lock (invariantLock) to notify waiting threads when T11
+ * fires enough times.
  */
 public class Monitor implements MonitorInterface {
 
@@ -17,8 +22,12 @@ public class Monitor implements MonitorInterface {
   private final Map<Integer, Transition> transitions;
   // The active policy (could be BalancedPolicy or PriorityPolicy).
   private final Policy policy;
-
   private static final Logger logger = Logger.getInstance();
+
+  // Counter for how many times T11 has fired.
+  private int t11Counter = 0;
+  // Lock object used to signal when the T11 counter reaches 186.
+  private final Object invariantLock = new Object();
 
   /**
    * Constructs a Monitor with the given Places, Transitions, and Policy.
@@ -50,19 +59,21 @@ public class Monitor implements MonitorInterface {
     }
 
     if (!transition.isEnabled(places)) {
-      logger.debug("Transition " + transitionId + " is not enabled.");
+      // logger.debug("Transition " + transitionId + " is not enabled.");
       return false;
     }
 
     // Consult the policy before firing.
     if (!policy.allowTransition(transitionId, places)) {
-      logger.debug("Policy did not allow transition " + transitionId + " to fire.");
+      // logger.debug("Policy did not allow transition " + transitionId + " to
+      // fire.");
       return false;
+
     }
 
     try {
       transition.fire(places);
-      // Update the policy counters after a successful fire.
+      // Update policy counters after successful firing.
       policy.updateCounters(transitionId, places);
 
       if (!places.checkInvariants()) {
@@ -70,7 +81,18 @@ public class Monitor implements MonitorInterface {
         return false;
       }
 
-      logger.info("Transition " + transitionId + " fired successfully.");
+      // If this is the closing transition T11, update the counter.
+      if (transitionId == 11) {
+        t11Counter++;
+        // If we have reached 186 invariants, notify waiting threads.
+        if (t11Counter >= 186) {
+          synchronized (invariantLock) {
+            invariantLock.notifyAll();
+          }
+        }
+      }
+
+      // logger.info("Transition " + transitionId + " fired successfully.");
       return true;
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
@@ -81,5 +103,23 @@ public class Monitor implements MonitorInterface {
       return false;
     }
   }
-}
 
+  /**
+   * Returns the count of how many times T11 has fired.
+   * This count can be used as a measure of completed invariant cycles.
+   *
+   * @return the T11 firing counter.
+   */
+  public synchronized int getT11Counter() {
+    return t11Counter;
+  }
+
+  /**
+   * Returns the lock object used for waiting for invariant completion.
+   *
+   * @return the invariantLock.
+   */
+  public Object getInvariantLock() {
+    return invariantLock;
+  }
+}
