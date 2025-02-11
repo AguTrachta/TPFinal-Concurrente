@@ -3,6 +3,7 @@ package petrinet;
 import java.util.HashMap;
 import java.util.Map;
 import utils.Logger;
+import utils.TransitionNotifier;
 
 /**
  * Represents the set of places in the Petri net.
@@ -54,7 +55,8 @@ public class Places {
         int current = getTokenCount(placeId);
         int newCount = current + count;
         tokens.put(placeId, newCount);
-        logger.info("Added " + count + " tokens to place " + placeId + ". New count: " + newCount);
+        // logger.info("Added " + count + " tokens to place " + placeId + ". New count:
+        // " + newCount);
     }
 
     /**
@@ -72,7 +74,16 @@ public class Places {
         }
         int newCount = current - count;
         tokens.put(placeId, newCount);
-        logger.info("Removed " + count + " tokens from place " + placeId + ". New count: " + newCount);
+        // logger.info("Removed " + count + " tokens from place " + placeId + ". New
+        // count: " + newCount);
+
+        // Signal that the token state has changed.
+        TransitionNotifier.lock.lock();
+        try {
+            TransitionNotifier.transitionsEnabled.signalAll();
+        } finally {
+            TransitionNotifier.lock.unlock();
+        }
     }
 
     /**
@@ -95,4 +106,3 @@ public class Places {
         return true;
     }
 }
-
