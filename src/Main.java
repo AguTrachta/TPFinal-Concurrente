@@ -1,90 +1,115 @@
 
-import java.util.*;
-import pool.PoolManager;
-import pool.MyThreadFactory;
+import java.util.List;
 import monitor.Monitor;
-import monitor.MonitorInterface;
+import monitor.Scheduler;
+import pool.MyThreadFactory;
+import pool.PoolManager;
+import utils.Logger;
+import utils.PetriNet;
 import petrinet.Places;
 import petrinet.Segment;
-import petrinet.Transition;
+import monitor.PriorityPolicy;
+import monitor.BalancedPolicy;
 
-/**
- * Main class to test a more complex Petri net.
- */
 public class Main {
-  public static void main(String[] args) {
-    // 1. Create a shared Places object and initialize places.
-    Places places = new Places();
-    places.addPlace(1, 1); // Place 1 starts with 1 token.
-    places.addPlace(2, 1); // Place 2 starts with 1 token.
-    places.addPlace(3, 0); // Place 3 starts with 0 tokens.
-    places.addPlace(4, 0); // Place 4 starts with 0 tokens.
+    public static void main(String[] args) {
+        Logger logger = Logger.getInstance();
+        logger.info("Starting Petri net simulation.");
 
-    // 2. Create transitions.
+        // Start the timer.
+        long startTime = System.currentTimeMillis();
 
-    // Transition 1: Consumes 1 token from Place 1 and 1 token from Place 2, then
-    // produces 1 token in Place 3.
-    Map<Integer, Integer> pre1 = new HashMap<>();
-    pre1.put(1, 1);
-    pre1.put(2, 1);
-    Map<Integer, Integer> post1 = new HashMap<>();
-    post1.put(3, 1);
-    Transition t1 = new Transition(1, pre1, post1);
+        // Build the Petri net.
+        PetriNet net = new PetriNet();
 
-    // Transition 2: Temporal transition; consumes 1 token from Place 3 and produces
-    // 1 token in Place 4,
-    // with a delay of 500ms.
-    Map<Integer, Integer> pre2 = new HashMap<>();
-    pre2.put(3, 1);
-    Map<Integer, Integer> post2 = new HashMap<>();
-    post2.put(4, 1);
-    Transition t2 = new Transition(2, pre2, post2, true, 500);
+        // Retrieve segments, places, and the monitor.
+        List<Segment> segments = net.getSegments();
+        Places places = net.getPlaces();
+        Monitor monitor = (Monitor) net.getMonitor();
 
-    // 3. Build a mapping of transitions (transition id -> Transition).
-    Map<Integer, Transition> transitions = new HashMap<>();
-    transitions.put(t1.getId(), t1);
-    transitions.put(t2.getId(), t2);
+        // Set up the thread pool with 4 threads.
+        MyThreadFactory threadFactory = new MyThreadFactory("TestPoolThread");
+        PoolManager poolManager = new PoolManager(4, threadFactory);
 
-    // 4. Create a Monitor with the shared Places and transitions map.
-    MonitorInterface monitor = new Monitor(places, transitions);
+        // Create and start the Scheduler.
+        Scheduler scheduler = new Scheduler(segments, poolManager);
+        Thread schedulerThread = new Thread(scheduler, "SchedulerThread");
+        schedulerThread.start();
 
-    // 5. Create segments.
-    // Segment A will handle Transition 1.
-    List<Transition> segATransitions = new ArrayList<>();
-    segATransitions.add(t1);
-    Segment segmentA = new Segment("Segment A", segATransitions, monitor, places);
+        // Wait until the invariant condition is met (T11 fired 186 times).
+        synchronized (monitor.getInvariantLock()) {
+            while (monitor.getT11Counter() < 186) {
+                try {
+                    monitor.getInvariantLock().wait();
+                } catch (InterruptedException e) {
+                    logger.error("Main thread interrupted while waiting for invariants: " + e.getMessage());
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+        logger.info("Completed 186 T-invariants (T11 fired 186 times).");
 
-    // Segment B will handle Transition 2.
-    List<Transition> segBTransitions = new ArrayList<>();
-    segBTransitions.add(t2);
-    Segment segmentB = new Segment("Segment B", segBTransitions, monitor, places);
+        // Stop the Scheduler and immediately shut down the thread pool.
+        scheduler.stop();
+        try {
+            schedulerThread.join();
+        } catch (InterruptedException e) {
+            logger.error("Failed to join scheduler thread: " + e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        poolManager.shutdownNow();
 
-    // 6. Set up the thread pool using the custom ThreadFactory and PoolManager.
-    MyThreadFactory threadFactory = new MyThreadFactory("PoolThread");
-    PoolManager poolManager = new PoolManager(4, threadFactory);
+        // Stop the timer and compute elapsed time.
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
 
-    // Submit the segments to the thread pool.
-    poolManager.submitTask(segmentA);
-    poolManager.submitTask(segmentB);
+        // Print the final tokens for each place.
+        System.out.println("Final tokens in Place 0: " + places.getTokenCount(0));
+        System.out.println("Final tokens in Place 1: " + places.getTokenCount(1));
+        System.out.println("Final tokens in Place 2: " + places.getTokenCount(2));
+        System.out.println("Final tokens in Place 3: " + places.getTokenCount(3));
+        System.out.println("Final tokens in Place 4: " + places.getTokenCount(4));
+        System.out.println("Final tokens in Place 5: " + places.getTokenCount(5));
+        System.out.println("Final tokens in Place 6: " + places.getTokenCount(6));
+        System.out.println("Final tokens in Place 7: " + places.getTokenCount(7));
+        System.out.println("Final tokens in Place 8: " + places.getTokenCount(8));
+        System.out.println("Final tokens in Place 9: " + places.getTokenCount(9));
+        System.out.println("Final tokens in Place 10: " + places.getTokenCount(10));
+        System.out.println("Final tokens in Place 11: " + places.getTokenCount(11));
+        System.out.println("Final tokens in Place 12: " + places.getTokenCount(12));
+        System.out.println("Final tokens in Place 13: " + places.getTokenCount(13));
+        System.out.println("Final tokens in Place 14: " + places.getTokenCount(14));
 
-    // 7. Let the simulation run for a while (e.g., 3 seconds).
-    try {
-      Thread.sleep(3000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+        if (monitor.getPolicy() instanceof PriorityPolicy) {
+            PriorityPolicy policy = (PriorityPolicy) monitor.getPolicy(); // Alternatively, if monitor stores policy,
+                                                                          // get it.
+            System.out.println("Superior reservations count: " + policy.getSuperiorCount());
+            System.out.println("Inferior reservations count: " + policy.getInferiorCount());
+            System.out.println("Confirmed reservations count: " + policy.getConfirmedCount());
+            System.out.println("Cancelled reservations count: " + policy.getCancelledCount());
+
+            double fourthInvariant = policy.getSuperiorCount() * 0.8;
+            double thirdInvariant = policy.getSuperiorCount() * 0.2;
+            double secondInvariant = policy.getInferiorCount() * 0.8;
+            double firstInvariant = policy.getInferiorCount() * 0.2;
+
+            System.out.println("First invariant (T3 and T7): " + Math.round(firstInvariant));
+            System.out.println("Second invariant (T3 and T6): " + Math.round(secondInvariant));
+            System.out.println("Third invariant (T2 and T7): " + Math.round(thirdInvariant));
+            System.out.println("Fourth invariant (T2 and T6): " + Math.round(fourthInvariant));
+        }
+
+        if (monitor.getPolicy() instanceof BalancedPolicy) {
+            BalancedPolicy policy = (BalancedPolicy) monitor.getPolicy(); // Alternatively, if monitor stores policy,
+                                                                          // get it.
+            System.out.println("Superior reservations count: " + policy.getSuperiorCount());
+            System.out.println("Inferior reservations count: " + policy.getInferiorCount());
+            System.out.println("Confirmed reservations count: " + policy.getConfirmedCount());
+            System.out.println("Cancelled reservations count: " + policy.getCancelledCount());
+        }
+
+        logger.info("Petri net simulation ended.");
+        logger.info("Elapsed time: " + elapsedTime + " ms");
+        logger.close();
     }
-
-    // 8. Signal the segments to stop.
-    segmentA.stop();
-    segmentB.stop();
-
-    // 9. Shutdown the thread pool gracefully.
-    poolManager.shutdown();
-
-    // 10. Print the final token counts for each place.
-    System.out.println("Final tokens in Place 1: " + places.getTokenCount(1));
-    System.out.println("Final tokens in Place 2: " + places.getTokenCount(2));
-    System.out.println("Final tokens in Place 3: " + places.getTokenCount(3));
-    System.out.println("Final tokens in Place 4: " + places.getTokenCount(4));
-  }
 }

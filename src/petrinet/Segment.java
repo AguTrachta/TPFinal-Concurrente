@@ -6,28 +6,19 @@ import utils.Logger;
 
 /**
  * Represents a segment of the Petri net execution.
- * Each segment is responsible for a subset of transitions and operates as a
- * Runnable.
+ * Each segment is responsible for a subset of transitions and is scheduled
+ * by a central scheduler to run when one of its transitions is enabled.
  */
 public class Segment implements Runnable {
     private final String segmentName;
     private final List<Transition> transitions;
     private final MonitorInterface monitor;
     private final Places places;
-    private volatile boolean running = true;
+    // Flag to prevent concurrent execution of the same segment.
+    private volatile boolean isRunning = false;
 
-    // Logger instance for tracing events in Segment
     private static final Logger logger = Logger.getInstance();
 
-    /**
-     * Constructs a Segment.
-     *
-     * @param segmentName a name/identifier for the segment (e.g., "Segment A")
-     * @param transitions the list of transitions that this segment will handle
-     * @param monitor     the shared MonitorInterface to fire transitions
-     * @param places      the shared Places object representing the state of the
-     *                    Petri net
-     */
     public Segment(String segmentName, List<Transition> transitions, MonitorInterface monitor, Places places) {
         this.segmentName = segmentName;
         this.transitions = transitions;
@@ -36,47 +27,69 @@ public class Segment implements Runnable {
         logger.info(segmentName + " initialized with " + transitions.size() + " transitions.");
     }
 
-    @Override
-    public void run() {
-        logger.info(segmentName + " started running.");
-        while (running) {
-            boolean firedAnyTransition = false;
-            // Iterate through the transitions managed by this segment
-            for (Transition transition : transitions) {
-                // Check if the transition is enabled. We avoid logging every check.
-                if (transition.isEnabled(places)) {
-                    // Only log when a transition is attempted to be fired.
-                    boolean fired = monitor.fireTransition(transition.getId());
-                    if (fired) {
-                        firedAnyTransition = true;
-                        logger.info(segmentName + " fired transition: " + transition.getId());
-                    }
-                }
-            }
-            // If no transition was fired, pause briefly to avoid busy waiting.
-            if (!firedAnyTransition) {
-                try {
-                    Thread.sleep(10); // Sleep for 10 milliseconds
-                } catch (InterruptedException e) {
-                    logger.warn(segmentName + " interrupted while sleeping.");
-                    running = false;
-                    Thread.currentThread().interrupt();
-                }
+    /**
+     * Checks whether any transition in this segment is enabled.
+     * 
+     * @return true if at least one transition is enabled; false otherwise.
+     */
+    public boolean hasEnabledTransition() {
+        for (Transition transition : transitions) {
+            if (transition.isEnabled(places)) {
+                return true;
             }
         }
-        logger.info(segmentName + " stopped running.");
+        return false;
     }
 
     /**
-     * Stops the segment's execution loop.
+     * Determines if this segment can be scheduled.
+     * It is available for scheduling if it is not already running and it has at
+     * least one enabled transition.
+     * 
+     * @return true if the segment can be scheduled; false otherwise.
      */
-    public void stop() {
-        running = false;
-        logger.info(segmentName + " stop signal received.");
+    public synchronized boolean canBeScheduled() {
+        return !isRunning && hasEnabledTransition();
     }
 
+    /**
+     * Returns the name of this segment.
+     */
     public String getSegmentName() {
         return segmentName;
     }
-}
 
+    /**
+     * Executes one cycle: iterates over its transitions and attempts to fire any
+     * enabled ones.
+     */
+    @Override
+    public void run() {
+        // Set the running flag to prevent concurrent execution.
+        synchronized (this) {
+            if (isRunning) {
+                return;
+            }
+            isRunning = true;
+        }
+        // logger.info(segmentName + " execution started.");
+        boolean firedAnyTransition = false;
+        for (Transition transition : transitions) {
+            if (transition.isEnabled(places)) {
+                boolean fired = monitor.fireTransition(transition.getId());
+                if (fired) {
+                    firedAnyTransition = true;
+                    // logger.info(segmentName + " fired transition: " + transition.getId());
+                }
+            }
+        }
+        if (!firedAnyTransition) {
+            // logger.info(segmentName + " had no enabled transitions.");
+        }
+        // logger.info(segmentName + " execution finished.");
+        // Clear the running flag.
+        synchronized (this) {
+            isRunning = false;
+        }
+    }
+}
