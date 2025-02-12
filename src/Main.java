@@ -8,6 +8,8 @@ import utils.Logger;
 import utils.PetriNet;
 import petrinet.Places;
 import petrinet.Segment;
+import monitor.PriorityPolicy;
+import monitor.BalancedPolicy;
 
 public class Main {
     public static void main(String[] args) {
@@ -77,6 +79,34 @@ public class Main {
         System.out.println("Final tokens in Place 12: " + places.getTokenCount(12));
         System.out.println("Final tokens in Place 13: " + places.getTokenCount(13));
         System.out.println("Final tokens in Place 14: " + places.getTokenCount(14));
+
+        if (monitor.getPolicy() instanceof PriorityPolicy) {
+            PriorityPolicy policy = (PriorityPolicy) monitor.getPolicy(); // Alternatively, if monitor stores policy,
+                                                                          // get it.
+            System.out.println("Superior reservations count: " + policy.getSuperiorCount());
+            System.out.println("Inferior reservations count: " + policy.getInferiorCount());
+            System.out.println("Confirmed reservations count: " + policy.getConfirmedCount());
+            System.out.println("Cancelled reservations count: " + policy.getCancelledCount());
+
+            double fourthInvariant = policy.getSuperiorCount() * 0.8;
+            double thirdInvariant = policy.getSuperiorCount() * 0.2;
+            double secondInvariant = policy.getInferiorCount() * 0.8;
+            double firstInvariant = policy.getInferiorCount() * 0.2;
+
+            System.out.println("First invariant (T3 and T7): " + Math.round(firstInvariant));
+            System.out.println("Second invariant (T3 and T6): " + Math.round(secondInvariant));
+            System.out.println("Third invariant (T2 and T7): " + Math.round(thirdInvariant));
+            System.out.println("Fourth invariant (T2 and T6): " + Math.round(fourthInvariant));
+        }
+
+        if (monitor.getPolicy() instanceof BalancedPolicy) {
+            BalancedPolicy policy = (BalancedPolicy) monitor.getPolicy(); // Alternatively, if monitor stores policy,
+                                                                          // get it.
+            System.out.println("Superior reservations count: " + policy.getSuperiorCount());
+            System.out.println("Inferior reservations count: " + policy.getInferiorCount());
+            System.out.println("Confirmed reservations count: " + policy.getConfirmedCount());
+            System.out.println("Cancelled reservations count: " + policy.getCancelledCount());
+        }
 
         logger.info("Petri net simulation ended.");
         logger.info("Elapsed time: " + elapsedTime + " ms");

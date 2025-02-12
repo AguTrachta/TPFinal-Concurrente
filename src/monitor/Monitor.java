@@ -122,4 +122,8 @@ public class Monitor implements MonitorInterface {
   public Object getInvariantLock() {
     return invariantLock;
   }
+
+  public Policy getPolicy() {
+    return policy;
+  }
 }

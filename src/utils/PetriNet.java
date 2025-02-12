@@ -9,6 +9,7 @@ import java.util.Map;
 import monitor.BalancedPolicy;
 import monitor.Monitor;
 import monitor.MonitorInterface;
+import monitor.PriorityPolicy;
 import petrinet.Places;
 import petrinet.Segment;
 import petrinet.Transition;
@@ -164,7 +165,8 @@ public class PetriNet {
     transitions.put(t11.getId(), t11);
 
     // Create Policy and Monitor.
-    BalancedPolicy policy = new BalancedPolicy();
+    // BalancedPolicy policy = new BalancedPolicy();
+    PriorityPolicy policy = new PriorityPolicy();
     monitor = new Monitor(places, transitions, policy);
 
     // Create Segments according to the specification.

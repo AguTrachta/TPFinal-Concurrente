@@ -1,48 +1,48 @@
-[2025-02-11 20:51:53] [main] [INFO] Starting Petri net simulation.
-[2025-02-11 20:51:53] [main] [INFO] Places object created.
-[2025-02-11 20:51:53] [main] [INFO] Added place 0 with initial tokens: 5
-[2025-02-11 20:51:53] [main] [INFO] Added place 1 with initial tokens: 1
-[2025-02-11 20:51:53] [main] [INFO] Added place 2 with initial tokens: 0
-[2025-02-11 20:51:53] [main] [INFO] Added place 3 with initial tokens: 0
-[2025-02-11 20:51:53] [main] [INFO] Added place 4 with initial tokens: 5
-[2025-02-11 20:51:53] [main] [INFO] Added place 5 with initial tokens: 0
-[2025-02-11 20:51:53] [main] [INFO] Added place 6 with initial tokens: 1
-[2025-02-11 20:51:53] [main] [INFO] Added place 7 with initial tokens: 1
-[2025-02-11 20:51:53] [main] [INFO] Added place 8 with initial tokens: 0
-[2025-02-11 20:51:53] [main] [INFO] Added place 9 with initial tokens: 0
-[2025-02-11 20:51:53] [main] [INFO] Added place 10 with initial tokens: 1
-[2025-02-11 20:51:53] [main] [INFO] Added place 11 with initial tokens: 0
-[2025-02-11 20:51:53] [main] [INFO] Added place 12 with initial tokens: 0
-[2025-02-11 20:51:53] [main] [INFO] Added place 13 with initial tokens: 0
-[2025-02-11 20:51:53] [main] [INFO] Added place 14 with initial tokens: 0
-[2025-02-11 20:51:53] [main] [INFO] Transition 0 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Transition 0 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Transition 1 created (temporal) with delay 200 ms.
-[2025-02-11 20:51:53] [main] [INFO] Transition 2 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Transition 2 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Transition 3 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Transition 3 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Transition 4 created (temporal) with delay 200 ms.
-[2025-02-11 20:51:53] [main] [INFO] Transition 5 created (temporal) with delay 200 ms.
-[2025-02-11 20:51:53] [main] [INFO] Transition 6 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Transition 6 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Transition 7 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Transition 7 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Transition 8 created (temporal) with delay 100 ms.
-[2025-02-11 20:51:53] [main] [INFO] Transition 9 created (temporal) with delay 100 ms.
-[2025-02-11 20:51:53] [main] [INFO] Transition 10 created (temporal) with delay 100 ms.
-[2025-02-11 20:51:53] [main] [INFO] Transition 11 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Transition 11 created (non-temporal).
-[2025-02-11 20:51:53] [main] [INFO] Monitor created with policy: BalancedPolicy
-[2025-02-11 20:51:53] [main] [INFO] SegmentA initialized with 2 transitions.
-[2025-02-11 20:51:53] [main] [INFO] SegmentB initialized with 2 transitions.
-[2025-02-11 20:51:53] [main] [INFO] SegmentC initialized with 2 transitions.
-[2025-02-11 20:51:53] [main] [INFO] SegmentD initialized with 3 transitions.
-[2025-02-11 20:51:53] [main] [INFO] SegmentE initialized with 2 transitions.
-[2025-02-11 20:51:53] [main] [INFO] SegmentF initialized with 1 transitions.
-[2025-02-11 20:51:53] [SchedulerThread] [INFO] Scheduler started.
-[2025-02-11 20:53:45] [main] [INFO] Completed 186 T-invariants (T11 fired 186 times).
-[2025-02-11 20:53:45] [SchedulerThread] [INFO] Scheduler stopped.
-[2025-02-11 20:53:45] [TestPoolThread-4] [ERROR] Transition 1 firing was interrupted.
-[2025-02-11 20:53:45] [main] [INFO] Petri net simulation ended.
-[2025-02-11 20:53:45] [main] [INFO] Elapsed time: 111991 ms
+[2025-02-12 17:11:41] [main] [INFO] Starting Petri net simulation.
+[2025-02-12 17:11:41] [main] [INFO] Places object created.
+[2025-02-12 17:11:41] [main] [INFO] Added place 0 with initial tokens: 5
+[2025-02-12 17:11:41] [main] [INFO] Added place 1 with initial tokens: 1
+[2025-02-12 17:11:41] [main] [INFO] Added place 2 with initial tokens: 0
+[2025-02-12 17:11:41] [main] [INFO] Added place 3 with initial tokens: 0
+[2025-02-12 17:11:41] [main] [INFO] Added place 4 with initial tokens: 5
+[2025-02-12 17:11:41] [main] [INFO] Added place 5 with initial tokens: 0
+[2025-02-12 17:11:41] [main] [INFO] Added place 6 with initial tokens: 1
+[2025-02-12 17:11:41] [main] [INFO] Added place 7 with initial tokens: 1
+[2025-02-12 17:11:41] [main] [INFO] Added place 8 with initial tokens: 0
+[2025-02-12 17:11:41] [main] [INFO] Added place 9 with initial tokens: 0
+[2025-02-12 17:11:41] [main] [INFO] Added place 10 with initial tokens: 1
+[2025-02-12 17:11:41] [main] [INFO] Added place 11 with initial tokens: 0
+[2025-02-12 17:11:41] [main] [INFO] Added place 12 with initial tokens: 0
+[2025-02-12 17:11:41] [main] [INFO] Added place 13 with initial tokens: 0
+[2025-02-12 17:11:41] [main] [INFO] Added place 14 with initial tokens: 0
+[2025-02-12 17:11:41] [main] [INFO] Transition 0 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Transition 0 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Transition 1 created (temporal) with delay 200 ms.
+[2025-02-12 17:11:41] [main] [INFO] Transition 2 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Transition 2 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Transition 3 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Transition 3 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Transition 4 created (temporal) with delay 200 ms.
+[2025-02-12 17:11:41] [main] [INFO] Transition 5 created (temporal) with delay 200 ms.
+[2025-02-12 17:11:41] [main] [INFO] Transition 6 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Transition 6 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Transition 7 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Transition 7 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Transition 8 created (temporal) with delay 100 ms.
+[2025-02-12 17:11:41] [main] [INFO] Transition 9 created (temporal) with delay 100 ms.
+[2025-02-12 17:11:41] [main] [INFO] Transition 10 created (temporal) with delay 100 ms.
+[2025-02-12 17:11:41] [main] [INFO] Transition 11 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Transition 11 created (non-temporal).
+[2025-02-12 17:11:41] [main] [INFO] Monitor created with policy: PriorityPolicy
+[2025-02-12 17:11:41] [main] [INFO] SegmentA initialized with 2 transitions.
+[2025-02-12 17:11:41] [main] [INFO] SegmentB initialized with 2 transitions.
+[2025-02-12 17:11:41] [main] [INFO] SegmentC initialized with 2 transitions.
+[2025-02-12 17:11:41] [main] [INFO] SegmentD initialized with 3 transitions.
+[2025-02-12 17:11:41] [main] [INFO] SegmentE initialized with 2 transitions.
+[2025-02-12 17:11:41] [main] [INFO] SegmentF initialized with 1 transitions.
+[2025-02-12 17:11:41] [SchedulerThread] [INFO] Scheduler started.
+[2025-02-12 17:13:48] [main] [INFO] Completed 186 T-invariants (T11 fired 186 times).
+[2025-02-12 17:13:48] [SchedulerThread] [INFO] Scheduler stopped.
+[2025-02-12 17:13:48] [TestPoolThread-3] [ERROR] Transition 1 firing was interrupted.
+[2025-02-12 17:13:48] [main] [INFO] Petri net simulation ended.
+[2025-02-12 17:13:48] [main] [INFO] Elapsed time: 127464 ms
