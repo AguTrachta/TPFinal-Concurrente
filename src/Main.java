@@ -1,7 +1,6 @@
 
 import java.util.List;
 import monitor.Monitor;
-import monitor.Scheduler;
 import pool.MyThreadFactory;
 import pool.PoolManager;
 import utils.Logger;
@@ -31,14 +30,12 @@ public class Main {
         MyThreadFactory threadFactory = new MyThreadFactory("TestPoolThread");
         PoolManager poolManager = new PoolManager(4, threadFactory);
 
-        // Create and start the Scheduler.
-        Scheduler scheduler = new Scheduler(segments, poolManager);
-        Thread schedulerThread = new Thread(scheduler, "SchedulerThread");
-        schedulerThread.start();
+        // Let the Monitor start the Scheduler thread.
+        monitor.startScheduler(segments, poolManager);
 
         // Wait until the invariant condition is met (T11 fired 186 times).
         synchronized (monitor.getInvariantLock()) {
-            while (monitor.getT11Counter() < 186) {
+            while (monitor.getT0Counter() < 187) {
                 try {
                     monitor.getInvariantLock().wait();
                 } catch (InterruptedException e) {
@@ -50,13 +47,7 @@ public class Main {
         logger.info("Completed 186 T-invariants (T11 fired 186 times).");
 
         // Stop the Scheduler and immediately shut down the thread pool.
-        scheduler.stop();
-        try {
-            schedulerThread.join();
-        } catch (InterruptedException e) {
-            logger.error("Failed to join scheduler thread: " + e.getMessage());
-            Thread.currentThread().interrupt();
-        }
+        monitor.stopScheduler();
         poolManager.shutdownNow();
 
         // Stop the timer and compute elapsed time.
@@ -81,8 +72,7 @@ public class Main {
         System.out.println("Final tokens in Place 14: " + places.getTokenCount(14));
 
         if (monitor.getPolicy() instanceof PriorityPolicy) {
-            PriorityPolicy policy = (PriorityPolicy) monitor.getPolicy(); // Alternatively, if monitor stores policy,
-                                                                          // get it.
+            PriorityPolicy policy = (PriorityPolicy) monitor.getPolicy();
             System.out.println("Superior reservations count: " + policy.getSuperiorCount());
             System.out.println("Inferior reservations count: " + policy.getInferiorCount());
             System.out.println("Confirmed reservations count: " + policy.getConfirmedCount());
@@ -100,8 +90,7 @@ public class Main {
         }
 
         if (monitor.getPolicy() instanceof BalancedPolicy) {
-            BalancedPolicy policy = (BalancedPolicy) monitor.getPolicy(); // Alternatively, if monitor stores policy,
-                                                                          // get it.
+            BalancedPolicy policy = (BalancedPolicy) monitor.getPolicy();
             System.out.println("Superior reservations count: " + policy.getSuperiorCount());
             System.out.println("Inferior reservations count: " + policy.getInferiorCount());
             System.out.println("Confirmed reservations count: " + policy.getConfirmedCount());

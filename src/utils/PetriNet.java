@@ -68,7 +68,7 @@ public class PetriNet {
     Map<Integer, Integer> postT1 = new HashMap<>();
     postT1.put(1, 1);
     postT1.put(3, 1);
-    Transition t1 = new Transition(1, preT1, postT1, true, 200);
+    Transition t1 = new Transition(1, preT1, postT1, true, 50);
 
     // T2: takes from p3 and p6; sends 1 token to p5 and 1 token to p4.
     Map<Integer, Integer> preT2 = new HashMap<>();
@@ -94,7 +94,7 @@ public class PetriNet {
     Map<Integer, Integer> postT4 = new HashMap<>();
     postT4.put(7, 1);
     postT4.put(9, 1);
-    Transition t4 = new Transition(4, preT4, postT4, true, 200);
+    Transition t4 = new Transition(4, preT4, postT4, true, 20);
 
     // T5: takes from p5; sends 1 token to p6 and 1 token to p9; 200ms delay.
     Map<Integer, Integer> preT5 = new HashMap<>();
@@ -102,7 +102,7 @@ public class PetriNet {
     Map<Integer, Integer> postT5 = new HashMap<>();
     postT5.put(6, 1);
     postT5.put(9, 1);
-    Transition t5 = new Transition(5, preT5, postT5, true, 200);
+    Transition t5 = new Transition(5, preT5, postT5, true, 10);
 
     // T6: takes from p9 and p10; sends 1 token to p11.
     Map<Integer, Integer> preT6 = new HashMap<>();
@@ -141,7 +141,7 @@ public class PetriNet {
     Map<Integer, Integer> postT10 = new HashMap<>();
     postT10.put(10, 1);
     postT10.put(14, 1);
-    Transition t10 = new Transition(10, preT10, postT10, true, 100);
+    Transition t10 = new Transition(10, preT10, postT10, true, 10);
 
     // T11: takes from p14; sends 1 token to p0; no delay.
     Map<Integer, Integer> preT11 = new HashMap<>();
