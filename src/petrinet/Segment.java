@@ -1,6 +1,8 @@
+
 package petrinet;
 
 import monitor.MonitorInterface;
+import monitor.Monitor;
 import java.util.List;
 import utils.Logger;
 
@@ -28,14 +30,20 @@ public class Segment implements Runnable {
     }
 
     /**
-     * Checks whether any transition in this segment is enabled.
-     * 
-     * @return true if at least one transition is enabled; false otherwise.
+     * Checks whether this segment has at least one transition that is both enabled
+     * (i.e., has the required tokens) and allowed by the policy.
+     *
+     * @return true if at least one transition is ready to be fired; false otherwise.
      */
-    public boolean hasEnabledTransition() {
-        for (Transition transition : transitions) {
-            if (transition.isEnabled(places)) {
-                return true;
+    private boolean hasEnabledAndAllowedTransition() {
+        // Cast the monitor to our concrete Monitor to access the policy.
+        if (monitor instanceof Monitor) {
+            Monitor concreteMonitor = (Monitor) monitor;
+            for (Transition transition : transitions) {
+                if (transition.isEnabled(places) &&
+                    concreteMonitor.getPolicy().allowTransition(transition.getId(), places)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -44,12 +52,12 @@ public class Segment implements Runnable {
     /**
      * Determines if this segment can be scheduled.
      * It is available for scheduling if it is not already running and it has at
-     * least one enabled transition.
-     * 
+     * least one transition that is both enabled and allowed by the policy.
+     *
      * @return true if the segment can be scheduled; false otherwise.
      */
     public synchronized boolean canBeScheduled() {
-        return !isRunning && hasEnabledTransition();
+        return !isRunning && hasEnabledAndAllowedTransition();
     }
 
     /**
@@ -72,21 +80,15 @@ public class Segment implements Runnable {
             }
             isRunning = true;
         }
-        // logger.info(segmentName + " execution started.");
         boolean firedAnyTransition = false;
         for (Transition transition : transitions) {
             if (transition.isEnabled(places)) {
                 boolean fired = monitor.fireTransition(transition.getId());
                 if (fired) {
                     firedAnyTransition = true;
-                    // logger.info(segmentName + " fired transition: " + transition.getId());
                 }
             }
         }
-        if (!firedAnyTransition) {
-            // logger.info(segmentName + " had no enabled transitions.");
-        }
-        // logger.info(segmentName + " execution finished.");
         // Clear the running flag.
         synchronized (this) {
             isRunning = false;

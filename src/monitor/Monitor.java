@@ -1,9 +1,13 @@
+
 package monitor;
 
 import petrinet.Places;
 import petrinet.Transition;
 import utils.Logger;
 import java.util.Map;
+import java.util.List;
+import pool.PoolManager;
+import petrinet.Segment;
 
 /**
  * The Monitor coordinates the firing of transitions.
@@ -11,9 +15,10 @@ import java.util.Map;
  * fires the transition, and updates counters.
  *
  * This version also maintains a counter for T11 (the designated closing
- * transition)
- * and uses an extra lock (invariantLock) to notify waiting threads when T11
- * fires enough times.
+ * transition) and uses an extra lock (invariantLock) to notify waiting threads
+ * when T11 fires enough times.
+ * 
+ * Additionally, the Monitor now manages the Scheduler thread.
  */
 public class Monitor implements MonitorInterface {
 
@@ -25,9 +30,13 @@ public class Monitor implements MonitorInterface {
   private static final Logger logger = Logger.getInstance();
 
   // Counter for how many times T11 has fired.
-  private int t11Counter = 0;
+  private int t0Counter = 0;
   // Lock object used to signal when the T11 counter reaches 186.
   private final Object invariantLock = new Object();
+
+  // For Scheduler management:
+  private Thread schedulerThread;
+  private Scheduler scheduler;
 
   /**
    * Constructs a Monitor with the given Places, Transitions, and Policy.
@@ -59,16 +68,13 @@ public class Monitor implements MonitorInterface {
     }
 
     if (!transition.isEnabled(places)) {
-      // logger.debug("Transition " + transitionId + " is not enabled.");
+      // Transition is not enabled (tokens missing).
       return false;
     }
 
     // Consult the policy before firing.
     if (!policy.allowTransition(transitionId, places)) {
-      // logger.debug("Policy did not allow transition " + transitionId + " to
-      // fire.");
       return false;
-
     }
 
     try {
@@ -81,18 +87,18 @@ public class Monitor implements MonitorInterface {
         return false;
       }
 
-      // If this is the closing transition T11, update the counter.
-      if (transitionId == 11) {
-        t11Counter++;
+      // If this is the closing transition (T11), update the counter.
+      // (Note: In your original code T11 is represented by transition id 0.)
+      if (transitionId == 0) {
+        t0Counter++;
         // If we have reached 186 invariants, notify waiting threads.
-        if (t11Counter >= 186) {
+        if (t0Counter >= 187) {
           synchronized (invariantLock) {
             invariantLock.notifyAll();
           }
         }
       }
 
-      // logger.info("Transition " + transitionId + " fired successfully.");
       return true;
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
@@ -105,13 +111,12 @@ public class Monitor implements MonitorInterface {
   }
 
   /**
-   * Returns the count of how many times T11 has fired.
-   * This count can be used as a measure of completed invariant cycles.
+   * Returns the count of how many times the closing transition has fired.
    *
    * @return the T11 firing counter.
    */
-  public synchronized int getT11Counter() {
-    return t11Counter;
+  public synchronized int getT0Counter() {
+    return t0Counter;
   }
 
   /**
@@ -125,5 +130,34 @@ public class Monitor implements MonitorInterface {
 
   public Policy getPolicy() {
     return policy;
+  }
+
+  /**
+   * Starts the scheduler thread with the provided segments and pool manager.
+   *
+   * @param segments    the list of segments to be scheduled.
+   * @param poolManager the thread pool manager.
+   */
+  public void startScheduler(List<Segment> segments, PoolManager poolManager) {
+    scheduler = new Scheduler(segments, poolManager);
+    schedulerThread = new Thread(scheduler, "SchedulerThread");
+    schedulerThread.start();
+    logger.info("Scheduler thread started by Monitor.");
+  }
+
+  /**
+   * Stops the scheduler thread gracefully.
+   */
+  public void stopScheduler() {
+    if (scheduler != null) {
+      scheduler.stop();
+      try {
+        schedulerThread.join();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        logger.error("Scheduler thread interruption during stop: " + e.getMessage());
+      }
+      logger.info("Scheduler thread stopped.");
+    }
   }
 }
