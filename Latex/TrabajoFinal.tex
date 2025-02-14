@@ -494,4 +494,80 @@ La clase \texttt{Main} es el punto de entrada de la aplicación y coordina la ej
 
 La clase \texttt{Main} orquesta la puesta en marcha del sistema, integrando la construcción del modelo, la configuración de la concurrencia y la coordinación mediante el Monitor y el Scheduler, y finalmente, la recogida de resultados para su análisis. Esto demuestra la integración completa del modelo teórico de la red de Petri con la implementación práctica en Java, cumpliendo con los requerimientos del proyecto.
 
+\section{Análisis de los Resultados}
+
+Se realizaron diversas pruebas modificando los tiempos de demora en las transiciones para evaluar el impacto de las políticas \textbf{Balanced} y \textbf{Priority}. A continuación, se presentan los resultados obtenidos para cada configuración:
+
+\subsection{Caso 1: Todas las transiciones con 5 ms}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{CASO_1.jpeg}
+    \caption{Resultados del Caso 1.}
+\end{figure}
+
+En este caso, todas las transiciones tienen el mismo tiempo de demora (\textbf{5 ms}), lo que significa que ninguna transición representa un cuello de botella significativo. Los tiempos de ejecución son similares, aunque la política \textbf{Balanced} muestra un tiempo menor (\textbf{4350.6 ms}) en comparación con \textbf{Priority} (\textbf{4774.8 ms}). Esto se debe a que \textbf{Priority} prioriza ciertos segmentos, lo que en este caso no aporta una ventaja significativa.
+
+\subsection{Caso 2: Demora en el pago}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{CASO_2.jpeg}
+    \caption{Resultados del Caso 2.}
+\end{figure}
+
+En esta configuración, la transición \textbf{Pago} (segmento D) tiene un tiempo de espera mayor. La política \textbf{Priority} favorece \textbf{Pago} con un \textbf{80\%} de probabilidad, lo que incrementa la espera general. Como resultado, el tiempo de ejecución de \textbf{Priority} (\textbf{12792.8 ms}) es mayor que el de \textbf{Balanced} (\textbf{10215 ms}), ya que la estrategia prioritaria selecciona mayormente un camino más lento.
+
+\subsection{Caso 3: Demora en Cancelación y Confirmación de Pago}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{CASO_3.jpeg}
+    \caption{Resultados del Caso 3.}
+\end{figure}
+
+En esta configuración, las transiciones \textbf{Cancelación} (segmento E) y \textbf{Confirmación de Pago} (segmento F) tienen \textbf{50 ms} de demora, mientras que las demás solo \textbf{5 ms}. La política \textbf{Priority} evita mayormente \textbf{Cancelación} (20\% de probabilidad) pero no puede evitar \textbf{Confirmación de Pago}, ya que es una transición de cierre del sistema.
+
+Dado que \textbf{Confirmación de Pago} se encuentra en el segmento final, su impacto afecta a ambas políticas por igual. Sin embargo, al reducir el paso por \textbf{Cancelación}, \textbf{Priority} logra un mejor tiempo de ejecución (\textbf{14589.2 ms}) en comparación con \textbf{Balanced} (\textbf{16094.4 ms}).
+
+\subsection{Caso 4: Demora en Reserva Superior y Confirmación de Pago}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{CASO_4.jpeg}
+    \caption{Resultados del Caso 4.}
+\end{figure}
+
+Las transiciones \textbf{Reserva Superior} (segmento B) y \textbf{Confirmación de Pago} (segmento F) tienen \textbf{50 ms} de demora. \textbf{Priority} favorece \textbf{B} con \textbf{75\%} de probabilidad, lo que incrementa la espera en este segmento. Como resultado, el tiempo de ejecución con \textbf{Priority} (\textbf{19793 ms}) es significativamente mayor que con \textbf{Balanced} (\textbf{14630 ms}), ya que la estrategia prioritaria no puede evitar los segmentos más lentos.
+
+\subsection{Caso 5: Demora en Ingreso a Sala de Espera}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{CASO_5.jpeg}
+    \caption{Resultados del Caso 5.}
+\end{figure}
+
+Aquí, la transición \textbf{Ingreso a Sala de Espera} (segmento A) tiene \textbf{50 ms} de demora, afectando de manera uniforme a todo el sistema. Esto hace que no haya una gran diferencia entre las políticas, con \textbf{Balanced} obteniendo \textbf{14363.2 ms} y \textbf{Priority} \textbf{14149.4 ms}. Dado que \textbf{Ingreso a Sala de Espera} es el primer paso del sistema, ninguna política puede optimizar su impacto.
+
+\subsection{Caso 6: Demora en Reserva Inferior y Reserva Superior}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{CASO_6.jpeg}
+    \caption{Resultados del Caso 6.}
+\end{figure}
+
+Las transiciones \textbf{Reserva Inferior} (segmento B) y \textbf{Reserva Superior} (segmento C) tienen \textbf{50 ms} de demora. Aunque \textbf{Priority} favorece \textbf{B} con \textbf{75\%}, la demora es similar en ambos caminos, lo que hace que el tiempo de ejecución sea casi igual entre ambas políticas (\textbf{Balanced}: \textbf{13997.8 ms}, \textbf{Priority}: \textbf{14014.2 ms}).
+
+\subsection{Caso 7: Demora en Reserva Inferior y Cancelación}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{CASO_7.jpeg}
+    \caption{Resultados del Caso 7.}
+\end{figure}
+
+En esta configuración, \textbf{Reserva Inferior} (segmento B) y \textbf{Cancelación} (segmento E) tienen \textbf{50 ms} de demora. \textbf{Priority} evita en gran medida \textbf{Cancelación}, favoreciendo \textbf{B} y \textbf{D} en su lugar. Esto hace que \textbf{Priority} sea considerablemente más eficiente (\textbf{8734.6 ms}) que \textbf{Balanced} (\textbf{14314.4 ms}), ya que minimiza la cantidad de ejecuciones que atraviesan \textbf{Cancelación}, reduciendo el impacto del tiempo de espera.
+
 \end{document}
