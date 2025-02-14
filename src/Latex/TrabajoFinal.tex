@@ -7,6 +7,15 @@
 \usepackage[a4paper, margin=1in]{geometry} % Configuración de página
 \usepackage{tabularx}      % Para tablas con ajuste automático de ancho de columna
 \usepackage{float}         % Para usar la opción [H] en tablas
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    hidelinks
+}
+
 
 \begin{document}
 
@@ -131,12 +140,12 @@ En la siguiente tabla se detallan las plazas de la red de Petri y el estado que 
     P6  & Recursos compartidos del sistema            \\ \hline
     P7  & Gestión de las Reservas                     \\ \hline
     P8  & Recursos compartidos del sistema            \\ \hline
-    P9  & Agente por cancelar la reserva              \\ \hline
-    P10 & Agente por generar reserva                  \\ \hline
+    P9  & Agente esperando a cancelar o confirmar reserva   \\ \hline
+    P10 & Recursos compartidos del sistema            \\ \hline
     P11 & Agente por confirmar reserva                \\ \hline
-    P12 & Agente por pagar la reserva                 \\ \hline
-    P13 & El cliente está por retirarse               \\ \hline
-    P14 & (Lugar adicional según el modelo)           \\ \hline
+    P12 & Agente por cancelar reserva                 \\ \hline
+    P13 & Agente pagando la reserva                   \\ \hline
+    P14 & Cliente listo para retirarse                \\ \hline
     \end{tabularx}
     \caption{Tabla de estados en la red de Petri.}
     \label{tabla:estados-red-petri}
@@ -175,11 +184,13 @@ A continuación se listan las transiciones y el evento asociado en la red de Pet
 
 \section{Determinación de la cantidad de hilos}
 
-Para la obtención de la cantidad máxima de hilos activos simultáneamente, utilizamos un algoritmo proporcionado por el profesor. A continuación, se detallan los resultados obtenidos:
+Para la obtención de la cantidad máxima de hilos activos simultáneamente, utilizamos un algoritmo basado en el procedimiento descrito en el paper del profesor. Dicho algoritmo se basa en el análisis de los invariantes de transición (IT) y el conjunto de plazas asociadas, eliminando aquellas que no corresponden a acciones activas en el sistema.
 
-\subsection{ Obtener los IT de la RdP}
+\subsection{Obtener los IT de la RdP}
 
-Los invariantes de transición (IT) representan combinaciones de transiciones que pueden ejecutarse sin afectar el estado general del sistema. Se han identificado los siguientes IT:
+Los invariantes de transición (IT) representan combinaciones de transiciones que pueden ejecutarse sin afectar el estado general del sistema. Son subconjuntos de transiciones que, al activarse en conjunto, llevan a un nuevo estado sin modificar la estructura global de la red de Petri.
+
+Se han identificado los siguientes IT en nuestra red de Petri:
 
 \begin{enumerate}
     \item \{T0, T1, T3, T4, T7, T8, T11\}
@@ -188,9 +199,11 @@ Los invariantes de transición (IT) representan combinaciones de transiciones qu
     \item \{T0, T1, T2, T5, T6, T9, T10, T11\}
 \end{enumerate}
 
-\subsection{ Obtener el conjunto de plazas asociadas al IT}
+El análisis de estos ITs nos permite comprender cómo se estructura el sistema y qué partes de la red pueden ejecutarse en paralelo.
 
-Cada IT está relacionado con un conjunto específico de plazas dentro de la red de Petri, lo que nos permite analizar cómo se distribuyen los recursos y estados en la concurrencia:
+\subsection{Obtener el conjunto de plazas asociadas al IT}
+
+Cada IT está relacionado con un conjunto específico de plazas dentro de la red de Petri. Estas plazas representan los estados alcanzables en la ejecución de las transiciones asociadas a cada IT. A continuación, se presentan las plazas detectadas para cada IT:
 
 \begin{enumerate}
     \item \{P0, P1, P2, P3, P4, P7, P8, P9, P10, P12, P14\}
@@ -199,22 +212,54 @@ Cada IT está relacionado con un conjunto específico de plazas dentro de la red
     \item \{P0, P1, P2, P3, P4, P5, P6, P9, P10, P11, P13, P14\}
 \end{enumerate}
 
-\subsection{ Determinar las plazas relacionadas a acciones de cada IT}
+Este conjunto nos permite identificar todas las plazas que se activan en cada posible ejecución del sistema.
+
+\subsection{Determinar las plazas relacionadas a acciones de cada IT}
+
+Para determinar la cantidad máxima de hilos activos simultáneamente, es necesario filtrar las plazas que realmente representan \textbf{acciones activas} en el sistema. Según el procedimiento del profesor, eliminamos las plazas que corresponden a \textbf{restricciones, recursos e idle}, dejando únicamente aquellas plazas que intervienen en el flujo de ejecución.
+
+El conjunto de plazas de acciones activas detectadas es:
 
 \begin{enumerate}
     \item \{P2, P8, P12\}
     \item \{P2, P8, P11, P13\}
     \item \{P2, P5, P12\}
-    \item \{P2,P5,P11, P13\}
+    \item \{P2, P5, P11, P13\}
 \end{enumerate}
 
-\subsection{  Obtenemos el conjunto de estados del conjunto de plazas PA}
+Aquí se observa que las plazas de acción activas varían dependiendo del IT, lo que indica que la concurrencia puede cambiar según el flujo de ejecución que se tome.
+
+\subsection{Obtención del conjunto de estados del conjunto de plazas \( PA \)}
+
+Una vez identificadas las plazas de acción activas, el siguiente paso es agruparlas en un solo conjunto global \( PA \). Este conjunto representa todas las plazas que están involucradas en la ejecución activa del sistema.
+
 \begin{enumerate}
-    \item PA = \{P2, P5, P8, P11, P12, P13\}
+    \item \( PA = \{P2, P5, P8, P11, P12, P13\} \)
 \end{enumerate}
 
-\subsection{ Suma de Marcas}
-Valor maximo de HILOS SIMULTANEOS = 4
+Para visualizar los posibles marcados en detalle, consulte la siguiente 
+\underline{\href{https://docs.google.com/spreadsheets/d/13lKcZztay1l-gB23JhTxPS3u15EKYW5BMGamDRmy2Xo/edit}{\textcolor{blue}{Tabla con posibles marcados}}}.
+
+Este conjunto será utilizado en la siguiente etapa para calcular la cantidad máxima de hilos simultáneamente activos.
+
+\subsection{Suma de marcas y determinación de hilos simultáneos}
+
+El último paso consiste en analizar el \textbf{árbol de alcanzabilidad} de la red de Petri. Para ello:
+\begin{enumerate}
+    \item Se obtiene el conjunto de todos los estados posibles de la red de Petri.
+    \item Para cada estado, se calcula la suma de marcas (tokens) en las plazas del conjunto \( PA \).
+    \item Se selecciona el estado donde la suma de marcas es \textbf{máxima}.
+    \item Este valor máximo representa la \textbf{cantidad máxima de hilos simultáneos} en el sistema.
+\end{enumerate}
+
+A partir de este procedimiento, se determinó que el valor máximo de marcas en la red es:
+
+\[
+\textbf{Valor máximo de HILOS SIMULTÁNEOS} = 4
+\]
+
+Este resultado nos indica que, en el punto de mayor concurrencia del sistema, pueden llegar a ejecutarse \textbf{hasta 4 hilos en simultáneo} de manera óptima.
+
 
 \section{Red de Petri final}
 
@@ -252,14 +297,15 @@ Cada segmento tiene un conjunto de plazas asociadas, denominadas \(PS_i\), que r
     \item \(PS_f = \{P14\} \Rightarrow \text{MAX} = 1\)
 \end{itemize}
 
-Dado que cada segmento requiere un hilo para su ejecución, la suma de los hilos necesarios en todos los segmentos nos da la cantidad total de hilos que el sistema puede necesitar en toda su ejecución:
+Dado que cada segmento requiere un hilo para su ejecución, la suma de los hilos necesarios en todos los segmentos nos da la cantidad total de hilos que el sistema puede requerir a lo largo de su ejecución:
 
 \[
-Hilos\ totales\ del\ sistema = 1 + 1 + 1 + 1 + 1 + 1 = 6
+\text{Hilos totales del sistema} = 1 + 1 + 1 + 1 + 1 + 1 = 6
 \]
 
-Sin embargo, esto no significa que en todo momento haya 6 hilos ejecutándose en simultáneo.  
-El primer algoritmo determinó que la **máxima cantidad de hilos activos simultáneamente** en la red de Petri es **4**, lo que significa que en el punto de mayor concurrencia del sistema, pueden llegar a ejecutarse hasta 4 hilos a la vez.  
-La segmentación realizada permite distribuir la carga de trabajo de manera eficiente, asegurando que cada hilo ejecute su parte sin interferencias y maximizando el rendimiento del sistema.
+Sin embargo, esto no implica que en todo momento haya 6 hilos ejecutándose simultáneamente.  
+El análisis realizado mediante el primer algoritmo determinó que la \textbf{máxima cantidad de hilos activos simultáneamente} en la red de Petri es \textbf{4}. Esto significa que, en el punto de mayor concurrencia del sistema, pueden ejecutarse hasta 4 hilos en paralelo.  
+
+La segmentación aplicada permite distribuir la carga de trabajo de manera eficiente, asegurando que cada hilo ejecute su parte sin interferencias, optimizando el uso de los recursos y maximizando el rendimiento del sistema.
 
 \end{document}
