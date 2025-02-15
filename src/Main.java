@@ -1,39 +1,44 @@
-
 import java.util.List;
+import java.util.Scanner;
+
 import monitor.Monitor;
+import monitor.Policy;
+import monitor.PriorityPolicy;
+import monitor.BalancedPolicy;
 import pool.MyThreadFactory;
 import pool.PoolManager;
 import utils.Logger;
 import utils.PetriNet;
 import petrinet.Places;
 import petrinet.Segment;
-import monitor.PriorityPolicy;
-import monitor.BalancedPolicy;
 
 public class Main {
     public static void main(String[] args) {
         Logger logger = Logger.getInstance();
         logger.info("Starting Petri net simulation.");
 
-        // Start the timer.
+        // Se le pide al usuario que elija una política.
+        Policy policy = choosePolicy();
+
+        // Se inicia el cronómetro.
         long startTime = System.currentTimeMillis();
 
-        // Build the Petri net.
-        PetriNet net = new PetriNet();
+        // Se construye la red de Petri utilizando la política seleccionada.
+        PetriNet net = new PetriNet(policy);
 
-        // Retrieve segments, places, and the monitor.
+        // Se obtienen los segmentos, los lugares y el monitor.
         List<Segment> segments = net.getSegments();
         Places places = net.getPlaces();
         Monitor monitor = (Monitor) net.getMonitor();
 
-        // Set up the thread pool with 4 threads.
+        // Se configura el pool de hilos con 32 hilos usando la fábrica personalizada.
         MyThreadFactory threadFactory = new MyThreadFactory("TestPoolThread");
         PoolManager poolManager = new PoolManager(4, threadFactory);
 
-        // Let the Monitor start the Scheduler thread.
+        // Se inicia el Scheduler del Monitor.
         monitor.startScheduler(segments, poolManager);
 
-        // Wait until the invariant condition is met (T11 fired 186 times).
+        // Se espera hasta que se cumpla la condición invariante (T11 disparado 186 veces).
         synchronized (monitor.getInvariantLock()) {
             while (monitor.getT0Counter() < 187) {
                 try {
@@ -46,15 +51,15 @@ public class Main {
         }
         logger.info("Completed 186 T-invariants (T11 fired 186 times).");
 
-        // Stop the Scheduler and immediately shut down the thread pool.
+        // Se detiene el Scheduler y se cierra inmediatamente el pool de hilos.
         monitor.stopScheduler();
         poolManager.shutdownNow();
 
-        // Stop the timer and compute elapsed time.
+        // Se detiene el cronómetro y se calcula el tiempo transcurrido.
         long endTime = System.currentTimeMillis();
         long elapsedTime = endTime - startTime;
 
-        // Print the final tokens for each place.
+        // Se imprimen los tokens finales en cada Place.
         System.out.println("Final tokens in Place 0: " + places.getTokenCount(0));
         System.out.println("Final tokens in Place 1: " + places.getTokenCount(1));
         System.out.println("Final tokens in Place 2: " + places.getTokenCount(2));
@@ -71,17 +76,18 @@ public class Main {
         System.out.println("Final tokens in Place 13: " + places.getTokenCount(13));
         System.out.println("Final tokens in Place 14: " + places.getTokenCount(14));
 
+        // Se imprimen estadísticas específicas de la política.
         if (monitor.getPolicy() instanceof PriorityPolicy) {
-            PriorityPolicy policy = (PriorityPolicy) monitor.getPolicy();
-            System.out.println("Superior reservations count: " + policy.getSuperiorCount());
-            System.out.println("Inferior reservations count: " + policy.getInferiorCount());
-            System.out.println("Confirmed reservations count: " + policy.getConfirmedCount());
-            System.out.println("Cancelled reservations count: " + policy.getCancelledCount());
+            PriorityPolicy prioPolicy = (PriorityPolicy) monitor.getPolicy();
+            System.out.println("Superior reservations count: " + prioPolicy.getSuperiorCount());
+            System.out.println("Inferior reservations count: " + prioPolicy.getInferiorCount());
+            System.out.println("Confirmed reservations count: " + prioPolicy.getConfirmedCount());
+            System.out.println("Cancelled reservations count: " + prioPolicy.getCancelledCount());
 
-            double fourthInvariant = policy.getSuperiorCount() * 0.8;
-            double thirdInvariant = policy.getSuperiorCount() * 0.2;
-            double secondInvariant = policy.getInferiorCount() * 0.8;
-            double firstInvariant = policy.getInferiorCount() * 0.2;
+            double fourthInvariant = prioPolicy.getSuperiorCount() * 0.8;
+            double thirdInvariant = prioPolicy.getSuperiorCount() * 0.2;
+            double secondInvariant = prioPolicy.getInferiorCount() * 0.8;
+            double firstInvariant = prioPolicy.getInferiorCount() * 0.2;
 
             System.out.println("First invariant (T3 and T7): " + Math.round(firstInvariant));
             System.out.println("Second invariant (T3 and T6): " + Math.round(secondInvariant));
@@ -90,15 +96,51 @@ public class Main {
         }
 
         if (monitor.getPolicy() instanceof BalancedPolicy) {
-            BalancedPolicy policy = (BalancedPolicy) monitor.getPolicy();
-            System.out.println("Superior reservations count: " + policy.getSuperiorCount());
-            System.out.println("Inferior reservations count: " + policy.getInferiorCount());
-            System.out.println("Confirmed reservations count: " + policy.getConfirmedCount());
-            System.out.println("Cancelled reservations count: " + policy.getCancelledCount());
+            BalancedPolicy balPolicy = (BalancedPolicy) monitor.getPolicy();
+            System.out.println("Superior reservations count: " + balPolicy.getSuperiorCount());
+            System.out.println("Inferior reservations count: " + balPolicy.getInferiorCount());
+            System.out.println("Confirmed reservations count: " + balPolicy.getConfirmedCount());
+            System.out.println("Cancelled reservations count: " + balPolicy.getCancelledCount());
         }
+
+        // Se imprime la máxima cantidad de tareas en ejecución simultánea, medida por el PoolManager.
+        System.out.println("Máxima cantidad de tareas en ejecución simultánea: " 
+                + poolManager.getMaxConcurrentTasks());
 
         logger.info("Petri net simulation ended.");
         logger.info("Elapsed time: " + elapsedTime + " ms");
         logger.close();
+    }
+
+    /**
+     * Solicita al usuario que elija una política:
+     * 1 para BalancedPolicy o 2 para PriorityPolicy.
+     * Se utiliza PriorityPolicy por defecto en caso de opción inválida.
+     *
+     * @return la instancia de Policy seleccionada.
+     */
+    private static Policy choosePolicy() {
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.println("Select a policy:");
+            System.out.println("1 - Balanced Policy");
+            System.out.println("2 - Priority Policy");
+            System.out.print("Enter your choice: ");
+
+            int choice = 2; // opción por defecto
+            if (scanner.hasNextInt()) {
+                choice = scanner.nextInt();
+            }
+            switch (choice) {
+                case 1:
+                    System.out.println("Balanced Policy selected.");
+                    return new BalancedPolicy();
+                case 2:
+                    System.out.println("Priority Policy selected.");
+                    return new PriorityPolicy();
+                default:
+                    System.out.println("Invalid choice. Defaulting to Priority Policy.");
+                    return new PriorityPolicy();
+            }
+        }
     }
 }

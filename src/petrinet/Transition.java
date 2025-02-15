@@ -127,6 +127,6 @@ public class Transition {
             // place " + placeId);
             places.addTokens(placeId, tokensToAdd);
         }
-        // logger.info("Transition " + id + " fired successfully.");
+        logger.info("Transition " + id + " fired successfully.");
     }
 }

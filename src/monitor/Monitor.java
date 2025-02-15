@@ -1,4 +1,3 @@
-
 package monitor;
 
 import petrinet.Places;
@@ -13,10 +12,6 @@ import petrinet.Segment;
  * The Monitor coordinates the firing of transitions.
  * It checks that transitions are enabled, consults the active Policy,
  * fires the transition, and updates counters.
- *
- * This version also maintains a counter for T11 (the designated closing
- * transition) and uses an extra lock (invariantLock) to notify waiting threads
- * when T11 fires enough times.
  * 
  * Additionally, the Monitor now manages the Scheduler thread.
  */
@@ -29,10 +24,12 @@ public class Monitor implements MonitorInterface {
   private final Policy policy;
   private static final Logger logger = Logger.getInstance();
 
-  // Counter for how many times T11 has fired.
+  // Counter for how many times T0 has fired.
   private int t0Counter = 0;
-  // Lock object used to signal when the T11 counter reaches 186.
+  // Lock object used to signal when the T0 counter reaches 187.
   private final Object invariantLock = new Object();
+  // Flag to indicate that no further T0 transitions should be fired.
+  private boolean simulationFinished = false;
 
   // For Scheduler management:
   private Thread schedulerThread;
@@ -61,6 +58,11 @@ public class Monitor implements MonitorInterface {
    */
   @Override
   public synchronized boolean fireTransition(int transitionId) {
+    // If the simulation is finished, do not allow further T0 firings.
+    if (transitionId == 0 && simulationFinished) {
+      return false;
+    }
+
     Transition transition = transitions.get(transitionId);
     if (transition == null) {
       logger.error("Transition " + transitionId + " not found.");
@@ -87,12 +89,13 @@ public class Monitor implements MonitorInterface {
         return false;
       }
 
-      // If this is the closing transition (T11), update the counter.
-      // (Note: In your original code T11 is represented by transition id 0.)
+      // When T0 fires, increment the counter.
       if (transitionId == 0) {
         t0Counter++;
-        // If we have reached 186 invariants, notify waiting threads.
+        // If we have reached 187 firings, mark simulation as finished
+        // and notify waiting threads.
         if (t0Counter >= 187) {
+          simulationFinished = true;
           synchronized (invariantLock) {
             invariantLock.notifyAll();
           }
@@ -111,9 +114,9 @@ public class Monitor implements MonitorInterface {
   }
 
   /**
-   * Returns the count of how many times the closing transition has fired.
+   * Returns the count of how many times the closing transition (T0) has fired.
    *
-   * @return the T11 firing counter.
+   * @return the T0 firing counter.
    */
   public synchronized int getT0Counter() {
     return t0Counter;
