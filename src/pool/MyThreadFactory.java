@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MyThreadFactory implements ThreadFactory {
     private final String baseName;
     private final AtomicInteger threadCount = new AtomicInteger(0);
-    // Contador de hilos actualmente activos.
+    // Counter for currently active threads.
     private final AtomicInteger currentActiveThreads = new AtomicInteger(0);
-    // Valor máximo de hilos activos alcanzado en algún momento.
+    // Maximum number of active threads reached at any moment.
     private final AtomicInteger maxActiveThreads = new AtomicInteger(0);
 
     /**
@@ -26,23 +26,23 @@ public class MyThreadFactory implements ThreadFactory {
 
     /**
      * Creates a new thread with a custom name and wraps the Runnable to track
-     * the cantidad de hilos activos.
+     * the number of active threads.
      *
      * @param r the Runnable task to execute.
      * @return a new Thread instance with a custom name.
      */
     @Override
     public Thread newThread(Runnable r) {
-        // Envolver el runnable para hacer tracking de hilos activos.
+        // Wrap the runnable to track active threads.
         Runnable wrappedRunnable = () -> {
-            // Incrementamos el contador al iniciar.
+            // Increment the counter at the start.
             int active = currentActiveThreads.incrementAndGet();
-            // Actualizamos el máximo si es necesario.
+            // Update the maximum if necessary.
             maxActiveThreads.updateAndGet(max -> Math.max(max, active));
             try {
                 r.run();
             } finally {
-                // Decrementamos el contador al terminar.
+                // Decrement the counter when finished.
                 currentActiveThreads.decrementAndGet();
             }
         };
@@ -53,9 +53,9 @@ public class MyThreadFactory implements ThreadFactory {
     }
 
     /**
-     * Retorna la cantidad máxima de hilos que estuvieron activos simultáneamente.
+     * Returns the maximum number of threads that were active simultaneously.
      *
-     * @return el máximo de hilos activos.
+     * @return the maximum number of active threads.
      */
     public int getMaxActiveThreads() {
         return maxActiveThreads.get();

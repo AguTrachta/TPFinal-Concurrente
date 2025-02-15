@@ -21,7 +21,6 @@ public class BalancedPolicy implements Policy {
 
   @Override
   public boolean allowTransition(int transitionId, Places places) {
-    // For example, assume:
     // Transition 2: Superior reservations (associated with place P6)
     // Transition 3: Inferior reservations (associated with place P7)
     // Transition 6: Confirmation
@@ -52,7 +51,6 @@ public class BalancedPolicy implements Policy {
     }
   }
 
-  // Optionally, add getters to retrieve the counters for logging/analysis.
   public int getSuperiorCount() {
     return superiorCount;
   }

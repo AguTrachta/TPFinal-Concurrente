@@ -8,14 +8,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * PoolManager encapsulates the management of a thread pool.
  * It is responsible for task submission and pool shutdown.
- * Además, permite medir la concurrencia real (máximo de tareas ejecutándose simultáneamente).
+ * Additionally, it allows measuring actual concurrency (maximum number of tasks running simultaneously).
  */
 public class PoolManager {
   private final ExecutorService executorService;
   
-  // Contador de tareas en ejecución actualmente.
+  // Counter for currently running tasks.
   private final AtomicInteger currentRunningTasks = new AtomicInteger(0);
-  // Valor máximo de tareas ejecutándose simultáneamente.
+  // Maximum number of tasks running simultaneously.
   private final AtomicInteger maxConcurrentTasks = new AtomicInteger(0);
 
   /**
@@ -31,29 +31,29 @@ public class PoolManager {
 
   /**
    * Submits a Runnable task to the thread pool.
-   * Se envuelve la tarea para medir la cantidad de tareas ejecutándose en paralelo.
+   * The task is wrapped to measure the number of tasks running in parallel.
    *
    * @param task the Runnable task to execute.
    */
   public void submitTask(Runnable task) {
     executorService.submit(() -> {
-      // Incrementamos el contador de tareas en ejecución.
+      // Increment the counter of running tasks.
       int running = currentRunningTasks.incrementAndGet();
-      // Actualizamos el máximo si corresponde.
+      // Update the maximum if necessary.
       maxConcurrentTasks.updateAndGet(max -> Math.max(max, running));
       try {
         task.run();
       } finally {
-        // Al finalizar la tarea, decrementamos el contador.
+        // Decrement the counter when the task finishes.
         currentRunningTasks.decrementAndGet();
       }
     });
   }
 
   /**
-   * Retorna el número máximo de tareas que se ejecutaron simultáneamente.
+   * Returns the maximum number of tasks that ran simultaneously.
    *
-   * @return el máximo de tareas concurrentes.
+   * @return the maximum number of concurrent tasks.
    */
   public int getMaxConcurrentTasks() {
     return maxConcurrentTasks.get();
@@ -75,7 +75,7 @@ public class PoolManager {
   }
 
   /**
-   * Immediately shuts down the thread pool by cancelling running tasks.
+   * Immediately shuts down the thread pool by canceling running tasks.
    */
   public void shutdownNow() {
     executorService.shutdownNow();

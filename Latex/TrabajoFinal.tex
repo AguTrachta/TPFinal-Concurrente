@@ -36,6 +36,8 @@ Sin embargo, la programación concurrente también presenta complejidades y desa
 
 El objetivo principal de este informe es presentar el enfoque adoptado para resolver un problema específico de programación concurrente utilizando redes de Petri para modelar el sistema y monitores para gestionar la sincronización y el acceso seguro a los recursos compartidos. A lo largo del informe se hacen referencia a algunas definiciones que pasaremos a detallar ahora:
 
+\newpage
+
 \section{¿Qué es una Red de Petri?}
 Una Red de Petri (RdP) es un modelo matemático y gráfico utilizado para describir y analizar sistemas concurrentes y distribuidos.
 
@@ -75,6 +77,7 @@ Este comportamiento se relaciona con la \textbf{vivacidad} de la red: se asegura
 \bigskip
 
 La validación de estas propiedades mediante \texttt{PIPE} nos proporciona confianza en el correcto comportamiento concurrente del sistema, asegurando que, a pesar de permitir múltiples tokens en algunas plazas, se mantienen las restricciones necesarias para evitar inconsistencias y bloqueos.
+\newpage
 
 \section{Invariante de Transición}
 Es un vector conformado por números enteros asociados a una secuencia de disparos. Son útiles para determinar propiedades estructurales de una RdP en forma analítica. Un invariante de transición es el conjunto mínimo de transiciones que, cuando las dispare, vuelvo al estado inicial. Esto nos indica que algo se hizo. Si me fijo cuántos invariantes se completaron, voy a entender cuántos ciclos se completaron.
@@ -97,6 +100,7 @@ Un invariante de plaza es el conjunto de plazas en donde la suma de sus tokens s
 
 \subsection{Bounded and live}
 El programa quiere decir que, además de estar acotada (bounded), la red siempre tiene la posibilidad de disparar alguna transición (live), por lo que no entra en un estado de bloqueo definitivo.
+\newpage
 
 \subsection{Ecuaciones de Invariante de Plaza}
 A continuación, se listan las ecuaciones de invariante de plaza derivadas de la red:
@@ -153,6 +157,8 @@ En la siguiente tabla se detallan las plazas de la red de Petri y el estado que 
     \caption{Tabla de estados en la red de Petri.}
     \label{tabla:estados-red-petri}
 \end{table}
+
+\newpage
 
 %---------------------------------
 % NUEVA SECCIÓN: Tabla de eventos
@@ -234,6 +240,7 @@ Este resultado indica que, en el punto de mayor concurrencia, hasta 4 hilos pued
 \vspace{1em}
 \textbf{Referencia:} Los algoritmos y el procedimiento descrito se basan en el informe proporcionado por el profesor (ver Referencias al final del informe).
 
+\newpage
 
 \section{Red de Petri final}
 
@@ -493,6 +500,7 @@ La clase \texttt{Main} es el punto de entrada de la aplicación y coordina la ej
 \end{enumerate}
 
 La clase \texttt{Main} orquesta la puesta en marcha del sistema, integrando la construcción del modelo, la configuración de la concurrencia y la coordinación mediante el Monitor y el Scheduler, y finalmente, la recogida de resultados para su análisis. Esto demuestra la integración completa del modelo teórico de la red de Petri con la implementación práctica en Java, cumpliendo con los requerimientos del proyecto.
+\newpage
 
 \section{Análisis de los Resultados}
 

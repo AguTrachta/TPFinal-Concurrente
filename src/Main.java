@@ -17,28 +17,28 @@ public class Main {
         Logger logger = Logger.getInstance();
         logger.info("Starting Petri net simulation.");
 
-        // Se le pide al usuario que elija una política.
+        // Ask the user to choose a policy.
         Policy policy = choosePolicy();
 
-        // Se inicia el cronómetro.
+        // Start the stopwatch.
         long startTime = System.currentTimeMillis();
 
-        // Se construye la red de Petri utilizando la política seleccionada.
+        // Construct the Petri net using the selected policy.
         PetriNet net = new PetriNet(policy);
 
-        // Se obtienen los segmentos, los lugares y el monitor.
+        // Retrieve the segments, places, and monitor.
         List<Segment> segments = net.getSegments();
         Places places = net.getPlaces();
         Monitor monitor = (Monitor) net.getMonitor();
 
-        // Se configura el pool de hilos con 32 hilos usando la fábrica personalizada.
+        // Configure the thread pool with 4 threads using the custom factory.
         MyThreadFactory threadFactory = new MyThreadFactory("TestPoolThread");
         PoolManager poolManager = new PoolManager(4, threadFactory);
 
-        // Se inicia el Scheduler del Monitor.
+        // Start the Monitor Scheduler.
         monitor.startScheduler(segments, poolManager);
 
-        // Se espera hasta que se cumpla la condición invariante (T11 disparado 186 veces).
+        // Wait until the invariant condition is met (T11 fired 186 times).
         synchronized (monitor.getInvariantLock()) {
             while (monitor.getT0Counter() < 187) {
                 try {
@@ -51,15 +51,15 @@ public class Main {
         }
         logger.info("Completed 186 T-invariants (T11 fired 186 times).");
 
-        // Se detiene el Scheduler y se cierra inmediatamente el pool de hilos.
+        // Stop the Scheduler and immediately shut down the thread pool.
         monitor.stopScheduler();
         poolManager.shutdownNow();
 
-        // Se detiene el cronómetro y se calcula el tiempo transcurrido.
+        // Stop the stopwatch and calculate elapsed time.
         long endTime = System.currentTimeMillis();
         long elapsedTime = endTime - startTime;
 
-        // Se imprimen los tokens finales en cada Place.
+        // Print final token counts in each Place.
         System.out.println("Final tokens in Place 0: " + places.getTokenCount(0));
         System.out.println("Final tokens in Place 1: " + places.getTokenCount(1));
         System.out.println("Final tokens in Place 2: " + places.getTokenCount(2));
@@ -76,7 +76,7 @@ public class Main {
         System.out.println("Final tokens in Place 13: " + places.getTokenCount(13));
         System.out.println("Final tokens in Place 14: " + places.getTokenCount(14));
 
-        // Se imprimen estadísticas específicas de la política.
+        // Print policy-specific statistics.
         if (monitor.getPolicy() instanceof PriorityPolicy) {
             PriorityPolicy prioPolicy = (PriorityPolicy) monitor.getPolicy();
             System.out.println("Superior reservations count: " + prioPolicy.getSuperiorCount());
@@ -103,8 +103,8 @@ public class Main {
             System.out.println("Cancelled reservations count: " + balPolicy.getCancelledCount());
         }
 
-        // Se imprime la máxima cantidad de tareas en ejecución simultánea, medida por el PoolManager.
-        System.out.println("Máxima cantidad de tareas en ejecución simultánea: " 
+        // Print the maximum number of simultaneously running tasks measured by PoolManager.
+        System.out.println("Maximum number of concurrently running tasks: " 
                 + poolManager.getMaxConcurrentTasks());
 
         logger.info("Petri net simulation ended.");
@@ -113,11 +113,11 @@ public class Main {
     }
 
     /**
-     * Solicita al usuario que elija una política:
-     * 1 para BalancedPolicy o 2 para PriorityPolicy.
-     * Se utiliza PriorityPolicy por defecto en caso de opción inválida.
+     * Asks the user to choose a policy:
+     * 1 for BalancedPolicy or 2 for PriorityPolicy.
+     * PriorityPolicy is used by default if an invalid option is chosen.
      *
-     * @return la instancia de Policy seleccionada.
+     * @return the selected Policy instance.
      */
     private static Policy choosePolicy() {
         try (Scanner scanner = new Scanner(System.in)) {
@@ -126,7 +126,7 @@ public class Main {
             System.out.println("2 - Priority Policy");
             System.out.print("Enter your choice: ");
 
-            int choice = 2; // opción por defecto
+            int choice = 2; // default option
             if (scanner.hasNextInt()) {
                 choice = scanner.nextInt();
             }
