@@ -7,6 +7,7 @@
 \usepackage[a4paper, margin=1in]{geometry} % Configuración de página
 \usepackage{tabularx}      % Para tablas con ajuste automático de ancho de columna
 \usepackage{float}         % Para usar la opción [H] en tablas
+\usepackage{hyperref} % Asegúrate de incluir esto en el preámbulo
 
 \begin{document}
 
@@ -29,6 +30,9 @@
     \vfill
 \end{titlepage}
 
+\tableofcontents
+\newpage
+
 \section{Introducción}
 El presente informe detalla el trabajo realizado para abordar un problema de programación concurrente mediante el uso de redes de Petri y monitores. La programación concurrente se ha convertido en una disciplina esencial en el desarrollo de sistemas modernos, ya que permite aprovechar la capacidad de procesamiento de múltiples hilos de ejecución para mejorar la eficiencia y el rendimiento de las aplicaciones.
 
@@ -39,7 +43,7 @@ El objetivo principal de este informe es presentar el enfoque adoptado para reso
 \newpage
 
 \section{¿Qué es una Red de Petri?}
-Una Red de Petri (RdP) es un modelo matemático y gráfico utilizado para describir y analizar sistemas concurrentes y distribuidos.
+Una Red de Petri (RdP) es un modelo matemático y gráfico utilizado para representar, analizar y simular sistemas concurrentes, distribuidos y asíncronos.
 
 \section{¿Por qué utilizamos RdP?}
 Permiten modelar y visualizar casos de la vida real con paralelismo, concurrencia, sincronización e intercambio de recursos. Además, tienen un formalismo matemático y gráfico que nos permite determinar el disparo de una RdP y el siguiente marcado. Las RdP nos permiten separar la lógica de la política. La lógica es lo que puedo hacer, y la política es lo que me conviene hacer.
@@ -70,9 +74,10 @@ La red se considera \textbf{segura} si, en cualquier marcado alcanzable, cada pl
 En nuestro modelo, se observa que algunas marcas pueden contener hasta 5 tokens, lo que indica que la red no es segura. Esto es coherente con el hecho de que se permite la entrada de hasta 5 clientes, lo que puede ser aceptable según la lógica del sistema, pero implica que la seguridad en el sentido estricto (máximo 1 token por plaza) no se cumple.
 
 \subsection{Sin Deadlock y Vivacidad}
-Un \textbf{deadlock} ocurre cuando la red alcanza un estado en el que ninguna transición es habilitada, lo que impide cualquier avance en la ejecución del sistema.  
-El análisis realizado indica que la red no presenta deadlock, ya que en cada estado alcanzable existe al menos una transición habilitada. Esto garantiza que, sin importar el camino de ejecución, el sistema siempre puede continuar avanzando.  
-Este comportamiento se relaciona con la \textbf{vivacidad} de la red: se asegura que, para cada transición, exista una secuencia de disparos que permita su eventual ejecución. En nuestro modelo, la vivacidad se corrobora al verificar que siempre hay transiciones disponibles para disparar, evitando estados bloqueados.
+
+Un \textbf{deadlock} ocurre cuando la red alcanza un estado en el que ninguna transición está habilitada, impidiendo cualquier avance en la ejecución del sistema. El análisis realizado indica que la red no presenta deadlock, ya que en cada estado alcanzable existe al menos una transición habilitada. Esto sugiere que, sin importar el camino de ejecución, el sistema puede continuar operando.
+
+Este comportamiento está relacionado con la \textbf{vivacidad} de la red, que implica que cada transición pueda ejecutarse en algún momento. Sin embargo, para determinar completamente la vivacidad, no solo es necesario verificar que siempre haya transiciones habilitadas, sino también descartar la posibilidad de \textbf{livelock}. Un livelock ocurriría si la red mantiene una secuencia de disparos repetitiva sin permitir la activación de ciertas transiciones necesarias para el progreso real del sistema. Por lo tanto, la ausencia de deadlock es una condición necesaria, pero no suficiente, para garantizar la vivacidad en su totalidad.
 
 \bigskip
 
@@ -98,8 +103,6 @@ Un invariante de plaza es el conjunto de plazas en donde la suma de sus tokens s
     \textit{The net is covered by positive T-invariants, therefore it is bounded.}
 \end{center}
 
-\subsection{Bounded and live}
-El programa quiere decir que, además de estar acotada (bounded), la red siempre tiene la posibilidad de disparar alguna transición (live), por lo que no entra en un estado de bloqueo definitivo.
 \newpage
 
 \subsection{Ecuaciones de Invariante de Plaza}
@@ -203,7 +206,7 @@ Se han identificado los siguientes IT de la tabla mencionada en el apartado 5:
     \item $\{T0, T1, T2, T5, T7, T8, T11\}$
     \item $\{T0, T1, T2, T5, T6, T9, T10, T11\}$
 \end{enumerate}
-
+\newpage
 \subsection{Obtención del Conjunto de Plazas Asociadas a cada IT}
 Para cada IT, se identifica el conjunto de plazas involucradas, lo que permite analizar cómo se distribuyen los recursos y estados en el sistema. 
 \begin{enumerate}
@@ -213,14 +216,35 @@ Para cada IT, se identifica el conjunto de plazas involucradas, lo que permite a
     \item Para el IT4: $\{P0, P1, P2, P3, P4, P5, P6, P9, P10, P11, P13, P14\}$
 \end{enumerate}
 
-\subsection{Determinación de las Plazas de Acción}
-Dentro de cada IT, se elimina el conjunto de plazas que representan restricciones, recursos o estados idle, dejando únicamente aquellas plazas asociadas a acciones críticas. Así se obtienen:
-\begin{enumerate}
-    \item Para el IT1: $\{P2, P8, P12\}$
-    \item Para el IT2: $\{P2, P8, P11, P13\}$
-    \item Para el IT3: $\{P2, P5, P12\}$
-    \item Para el IT4: $\{P2, P5, P11, P13\}$
-\end{enumerate}
+\subsection{Determinación de las Plazas de Acción}  
+Dentro de cada IT, se elimina el conjunto de plazas que representan \textbf{restricciones, recursos o estados idle}, dejando únicamente aquellas plazas asociadas a acciones críticas. Así se obtienen:
+
+\begin{enumerate}  
+    \item Para el IT1: $\{P2, P8, P12\}$  
+    \item Para el IT2: $\{P2, P8, P11, P13\}$  
+    \item Para el IT3: $\{P2, P5, P12\}$  
+    \item Para el IT4: $\{P2, P5, P11, P13\}$  
+\end{enumerate}  
+
+A continuación, se detallan las razones por las cuales ciertas plazas fueron descartadas:
+
+\begin{itemize}
+    \item \textbf{Plazas eliminadas por ser restricciones}
+    \begin{itemize}
+        \item \textbf{\{P3, P9\}}: Estas plazas actúan como \textbf{puntos de control} dentro del sistema, regulando el flujo de tokens y asegurando que ciertas condiciones se cumplan antes de que las transiciones se activen. No representan una \textbf{acción directa}, sino que limitan o sincronizan el comportamiento del sistema.
+    \end{itemize}
+
+    \item \textbf{Plazas eliminadas por representar estados idle}
+    \begin{itemize}
+        \item \textbf{\{P0, P14\}}: Estas plazas representan \textbf{estados de inactividad o espera} dentro del sistema. Son estados en los que el sistema no realiza una \textbf{acción productiva} hasta que ocurra un evento externo o se cumpla una condición específica. Su presencia indica una \textbf{pausa en la ejecución} en lugar de una acción activa.
+    \end{itemize}
+
+    \item \textbf{Plazas eliminadas por representar recursos}
+    \begin{itemize}
+        \item \textbf{\{P1, P4, P6, P7, P10\}}: Estas plazas modelan \textbf{recursos limitados} en el sistema, como \textbf{capacidad de procesamiento, permisos de acceso o disponibilidad de elementos}. No representan una \textbf{acción en sí mismas}, sino que regulan la \textbf{disponibilidad de los elementos} que permiten ejecutar otras transiciones.
+    \end{itemize}
+\end{itemize}
+
 
 \subsection{Construcción del Conjunto de Estados del Conjunto de Plazas de Acción (PA)}
 Se define el conjunto PA como la unión de todas las plazas de acción obtenidas:
@@ -234,6 +258,12 @@ Para cada marcado en el conjunto PA se calcula la suma total de tokens. El valor
 \[
 \textbf{Valor máximo de hilos simultáneos} = 4
 \]
+
+Este resultado fue obtenido a partir del análisis de los datos registrados en la tabla de Excel disponible en el siguiente enlace:
+
+\begin{center}
+\textbf{\href{https://docs.google.com/spreadsheets/d/13lKcZztay1l-gB23JhTxPS3u15EKYW5BMGamDRmy2Xo/edit?hl=es\&gid=0}{Tabla de Excel con los cálculos de concurrencia.}}
+\end{center}
 
 Este resultado indica que, en el punto de mayor concurrencia, hasta 4 hilos pueden ejecutarse de forma simultánea, lo que permite aprovechar de manera óptima los recursos disponibles.
 
@@ -262,7 +292,7 @@ La elección de los segmentos en la red de Petri se basó en la identificación 
     
     \item \textbf{Segmento F:} Representa el punto de convergencia de caminos en la red (join). Para evitar bloqueos, se permite la ejecución paralela de los segmentos anteriores, asegurando que todas las dependencias se resuelvan antes de continuar con la ejecución final.
 \end{enumerate}
-
+\newpage
 \section{Determinación de hilos máximos por segmento}
 
 A partir de la segmentación de la red de Petri y la identificación de los subconjuntos de plazas asociadas a cada segmento, se determina la cantidad máxima de hilos que pueden ejecutarse simultáneamente. La segmentación permite dividir la ejecución en partes independientes, asegurando que no haya interferencias en la ejecución concurrente.
@@ -277,7 +307,6 @@ Cada segmento tiene un conjunto de plazas asociadas, denominadas \(PS_i\), que r
     \item \(PS_e = \{P12\} \Rightarrow \text{MAX} = 1\)
     \item \(PS_f = \{P14\} \Rightarrow \text{MAX} = 1\)
 \end{itemize}
-
 Dado que cada segmento requiere un hilo para su ejecución, la suma de los hilos necesarios en todos los segmentos nos da la cantidad total de hilos que el sistema puede necesitar en toda su ejecución:
 
 \[
@@ -285,8 +314,9 @@ Hilos\ totales\ del\ sistema = 1 + 1 + 1 + 1 + 1 + 1 = 6
 \]
 
 Sin embargo, esto no significa que en todo momento haya 6 hilos ejecutándose en simultáneo.  
-El primer algoritmo determinó que la **máxima cantidad de hilos activos simultáneamente** en la red de Petri es **4**, lo que significa que en el punto de mayor concurrencia del sistema, pueden llegar a ejecutarse hasta 4 hilos a la vez.  
+El primer algoritmo determinó que la \textbf{máxima cantidad de hilos activos simultáneamente} en la red de Petri es \textbf{4}, lo que significa que en el punto de mayor concurrencia del sistema, pueden llegar a ejecutarse hasta 4 hilos a la vez.  
 La segmentación realizada permite distribuir la carga de trabajo de manera eficiente, asegurando que cada hilo ejecute su parte sin interferencias y maximizando el rendimiento del sistema.
+
 
 \section{Implementación en Java}
 
@@ -577,5 +607,29 @@ Las transiciones \textbf{Reserva Inferior} (segmento B) y \textbf{Reserva Superi
 \end{figure}
 
 En esta configuración, \textbf{Reserva Inferior} (segmento B) y \textbf{Cancelación} (segmento E) tienen \textbf{50 ms} de demora. \textbf{Priority} evita en gran medida \textbf{Cancelación}, favoreciendo \textbf{B} y \textbf{D} en su lugar. Esto hace que \textbf{Priority} sea considerablemente más eficiente (\textbf{8734.6 ms}) que \textbf{Balanced} (\textbf{14314.4 ms}), ya que minimiza la cantidad de ejecuciones que atraviesan \textbf{Cancelación}, reduciendo el impacto del tiempo de espera.
+\newpage
+\section{Conclusión}
+
+Este trabajo final nos permitió aplicar los conceptos de \textbf{programación concurrente} a través del modelado y análisis de una \textbf{Red de Petri}, lo que nos permitió comprender en profundidad la gestión de sincronización y concurrencia en sistemas distribuidos.
+
+A lo largo del desarrollo del proyecto, logramos:
+\begin{itemize}
+    \item \textbf{Modelar el sistema} utilizando una \textbf{Red de Petri} y analizar sus propiedades, verificando la ausencia de \textbf{deadlocks} y evaluando su \textbf{vivacidad}.
+    \item \textbf{Determinar la concurrencia máxima del sistema}, identificando que hasta \textbf{4 hilos pueden ejecutarse simultáneamente} en el punto de mayor concurrencia.
+    \item \textbf{Implementar una solución en Java}, donde utilizamos \textbf{monitores} para la gestión de sincronización y \textbf{políticas de resolución de conflictos} para optimizar la ejecución del sistema.
+    \item \textbf{Comparar diferentes estrategias de ejecución}, evaluando el impacto de las políticas \textbf{Balanced} y \textbf{Priority} en el tiempo de ejecución mediante simulaciones con distintos tiempos de espera en transiciones clave.
+\end{itemize}
+
+Los resultados obtenidos mostraron que la elección de la \textbf{política de ejecución} \textbf{afecta significativamente el rendimiento del sistema}, y que, en ciertos escenarios, priorizar determinadas transiciones puede ser beneficioso, mientras que en otros puede aumentar el tiempo de ejecución global.
+\newpage
+\section{Referencias}
+
+\begin{itemize}
+    \item \textbf{Ventre, L. O., \& Micolini, O.} (S3). \textit{Algoritmos para determinar cantidad y responsabilidad de hilos en sistemas embebidos modelados con Redes de Petri}. PR.
+    
+    \item \textbf{Facultad de Ciencias Exactas, Físicas y Naturales, Universidad Nacional de Córdoba}. Contenido visto y estudiado en la materia \textit{Programación Concurrente}.
+    
+    \item \textbf{Stallings, W.} (2018). \textit{Operating Systems: Internals and Design Principles}
+\end{itemize}
 
 \end{document}
