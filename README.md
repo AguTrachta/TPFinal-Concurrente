@@ -4,7 +4,7 @@ Este repositorio contiene el código fuente y la documentación del trabajo fina
 
 ## 📌 Características del Proyecto
 - Implementación de una **Red de Petri** con **6 segmentos**.
-- **Concurrencia controlada** con un límite de **4 hilos simultáneos**.
+- **Concurrencia** con **4 hilos simultáneos** para la Red de Petri.
 - Uso de **monitores** para la gestión de sincronización y control de acceso.
 - Implementación de **dos políticas de ejecución**:
   - **BalancedPolicy**: Balancea la ejecución entre caminos alternativos.
